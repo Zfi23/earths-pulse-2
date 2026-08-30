@@ -1,435 +1,754 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نبض الأرض | Earth's Pulse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Fraunces:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg: #0e1712;
-    --bg-soft: #131f19;
-    --panel: #182720;
-    --line: rgba(233,231,221,0.12);
-    --ink: #e9e7dd;
-    --ink-dim: #a9b3ab;
-    --forest: #3c7a5c;
-    --forest-bright: #55a67c;
-    --ocean: #2f7f95;
-    --ice: #bfe3ea;
-    --amber: #d98e3f;
-    --danger: #c0563f;
-    --radius: 2px;
-  }
-  [data-theme="light"]{
-    --bg: #f3f1e7;
-    --bg-soft: #ece8d9;
-    --panel: #ffffff;
-    --line: rgba(20,30,25,0.12);
-    --ink: #16211b;
-    --ink-dim: #556358;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Tajawal', sans-serif;
-    line-height:1.6;
-    transition: background .35s ease, color .35s ease;
-    min-height:100vh;
-  }
-  body[dir="ltr"]{ font-family: 'Fraunces', 'Tajawal', serif; }
-  h1,h2,h3{ font-family:'Fraunces', 'Tajawal', serif; font-weight:600; margin:0 0 .3em; letter-spacing:.2px; }
-  a{color:inherit;}
-  .wrap{max-width:920px;margin:0 auto;padding:0 20px;}
+:root{
+  --green:#22c55e; --green-dim:rgba(34,197,94,0.12); --green-line:rgba(34,197,94,0.25);
+  --warn:#f59e0b; --danger:#ef4444;
+  --bg:#0b1210; --bg2:#0f1a16; --panel:#121f1a; --ink:#eef1ee; --ink-dim:#9fb0a7; --line:rgba(255,255,255,0.08);
+}
+[data-theme="light"]{
+  --bg:#f6f4ec; --bg2:#efece0; --panel:#ffffff; --ink:#16211b; --ink-dim:#5c6b62; --line:rgba(0,0,0,0.09);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:'Tajawal',sans-serif;transition:background .4s,color .4s;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Fraunces',serif;margin:0 0 .3em;font-weight:600;}
+a{color:inherit;}
+button,select{font-family:inherit;}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px;}
 
-  header.top{
-    position:sticky; top:0; z-index:20;
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    backdrop-filter: blur(8px);
-    border-bottom:1px solid var(--line);
-  }
-  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;}
-  .brand .pulse{width:9px;height:9px;border-radius:50%;background:var(--forest-bright);box-shadow:0 0 0 0 rgba(85,166,124,.6);animation:pulse 2.4s infinite;}
-  @keyframes pulse{
-    0%{box-shadow:0 0 0 0 rgba(85,166,124,.55);}
-    70%{box-shadow:0 0 0 10px rgba(85,166,124,0);}
-    100%{box-shadow:0 0 0 0 rgba(85,166,124,0);}
-  }
-  .controls{display:flex;gap:8px;}
-  .ctrl-btn{
-    background:transparent;border:1px solid var(--line);color:var(--ink);
-    padding:7px 12px;border-radius:var(--radius);font-family:inherit;font-size:.85rem;cursor:pointer;
-  }
-  .ctrl-btn:hover{border-color:var(--forest-bright);}
-  nav.tabs{display:flex;gap:2px;overflow-x:auto;padding-bottom:0;scrollbar-width:none;}
-  nav.tabs::-webkit-scrollbar{display:none;}
-  nav.tabs button{
-    background:none;border:none;color:var(--ink-dim);font-family:inherit;
-    padding:12px 14px;font-size:.92rem;white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;
-  }
-  nav.tabs button.active{color:var(--ink);border-bottom-color:var(--forest-bright);}
+#loading{
+  position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:100;transition:opacity .5s ease;
+}
+#loading.hide{opacity:0;pointer-events:none;}
+.pulse-circle{width:70px;height:70px;border-radius:50%;border:3px solid var(--green);position:relative;margin-bottom:24px;}
+.pulse-circle::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:3px solid var(--green);animation:pulseRing 1.6s ease-out infinite;}
+@keyframes pulseRing{0%{transform:scale(1);opacity:1;}100%{transform:scale(1.9);opacity:0;}}
+.loading-title{font-size:1.6rem;color:var(--green);}
+.loading-subtitle{letter-spacing:3px;color:var(--ink-dim);font-size:.8rem;margin-bottom:20px;}
+.loading-bar-track{width:200px;height:4px;background:var(--line);border-radius:4px;overflow:hidden;}
+.loading-bar-fill{height:100%;background:var(--green);transition:width .1s linear;}
 
-  main{padding:36px 0 80px;}
-  section.page{display:none;}
-  section.page.active{display:block;animation:fadein .4s ease;}
-  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.navbar{
+  position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;background:color-mix(in srgb, var(--bg) 85%, transparent);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);gap:12px;
+}
+.brand-mini{display:flex;align-items:center;gap:8px;font-weight:700;white-space:nowrap;}
+.brand-mini .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:pulse 2.2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55);}70%{box-shadow:0 0 0 9px rgba(34,197,94,0);}100%{box-shadow:0 0 0 0 rgba(34,197,94,0);}}
+.hamburger-btn{display:flex;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:6px;}
+.hamburger-btn span{width:20px;height:2px;background:var(--ink);display:block;}
+.nav-left{display:none;gap:4px;overflow-x:auto;}
+@media(min-width:860px){.nav-left{display:flex;}}
+.nav-link{background:none;border:none;color:var(--ink-dim);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:.9rem;white-space:nowrap;}
+.nav-link.active{color:var(--green);background:var(--green-dim);}
+.nav-controls{display:flex;align-items:center;gap:10px;}
+.nav-btn{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:.82rem;}
+.theme-toggle{width:44px;height:24px;border-radius:20px;background:var(--panel);border:1px solid var(--line);position:relative;cursor:pointer;}
+.theme-toggle .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--green);transition:transform .3s;display:flex;align-items:center;justify-content:center;font-size:10px;}
+[data-theme="light"] .theme-toggle .knob{transform:translateX(20px);}
+.mobile-menu{display:flex;flex-direction:column;background:var(--panel);border-bottom:1px solid var(--line);}
+.mobile-menu-link{background:none;border:none;color:var(--ink);text-align:right;padding:14px 20px;border-bottom:1px solid var(--line);cursor:pointer;font-size:.95rem;}
+.mobile-menu-link.active{color:var(--green);}
 
-  .hero{padding:20px 0 30px;border-bottom:1px solid var(--line);margin-bottom:30px;}
-  .hero h1{font-size:2rem;}
-  .hero p{color:var(--ink-dim);max-width:60ch;}
+main{min-height:70vh;}
+.page{display:none;animation:fadein .45s ease;}
+.page.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-  .env-grid{display:grid;grid-template-columns:1fr;gap:16px;}
-  @media(min-width:640px){.env-grid{grid-template-columns:repeat(3,1fr);}}
-  .env-card{
-    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
-    padding:22px;cursor:pointer;transition:border-color .25s, transform .25s;
-  }
-  .env-card:hover{border-color:var(--forest-bright);transform:translateY(-2px);}
-  .env-card .icon{font-size:2rem;margin-bottom:10px;display:block;}
-  .env-card h3{font-size:1.1rem;margin-bottom:6px;}
-  .env-card p{color:var(--ink-dim);font-size:.88rem;margin:0;}
-  .env-detail{margin-top:20px;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);}
-  .env-detail .stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:.92rem;}
-  .env-detail .stat-row:last-child{border-bottom:none;}
-  .env-detail .stat-row b{color:var(--forest-bright);}
-  .env-detail a.video-link{display:inline-block;margin-top:12px;color:var(--ocean);text-decoration:underline;}
+.hero{text-align:center;padding:56px 20px 30px;position:relative;}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-dim);border:1px solid var(--green-line);color:var(--green);padding:7px 16px;border-radius:30px;font-size:.8rem;margin-bottom:18px;}
+.badge .bdot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.hero h1{font-size:2.4rem;letter-spacing:1px;}
+.hero p{color:var(--ink-dim);max-width:50ch;margin:10px auto 0;}
+.cards{display:grid;grid-template-columns:1fr;gap:16px;padding:20px;max-width:1000px;margin:0 auto;}
+@media(min-width:700px){.cards{grid-template-columns:repeat(3,1fr);}}
+.card{position:relative;height:280px;border-radius:18px;overflow:hidden;cursor:pointer;background-size:cover;background-position:center;box-shadow:0 8px 26px rgba(0,0,0,.25);transition:transform .3s;}
+.card:hover{transform:translateY(-4px);}
+.card .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.85) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:20px;color:#fff;}
+.card .card-icon-badge{position:absolute;top:14px;right:14px;font-size:1.6rem;background:rgba(0,0,0,.4);padding:8px 10px;border-radius:12px;}
+.card h3{margin-bottom:2px;font-size:1.3rem;color:#fff;}
+.card p{margin:0 0 10px;opacity:.85;font-size:.88rem;}
+.card .btn-link{color:var(--green);font-weight:700;font-size:.85rem;}
+.scroll-hint{text-align:center;color:var(--ink-dim);font-size:.8rem;margin-top:10px;}
+.scroll-arrow{font-size:1.2rem;animation:bounce 1.6s infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
 
-  .boundary{margin-bottom:14px;}
-  .boundary-head{display:flex;justify-content:space-between;font-size:.92rem;margin-bottom:6px;}
-  .boundary-head .pct{font-weight:700;}
-  .bar-track{height:9px;background:var(--bg-soft);border-radius:5px;overflow:hidden;border:1px solid var(--line);}
-  .bar-fill{height:100%;border-radius:5px;transition:width 1s ease;}
-  .level-low .bar-fill{background:var(--forest-bright);}
-  .level-mid .bar-fill{background:var(--amber);}
-  .level-high .bar-fill{background:var(--danger);}
+.page-header{text-align:center;padding:40px 20px 10px;max-width:640px;margin:0 auto;}
+.page-badge{display:inline-block;background:var(--green-dim);color:var(--green);border:1px solid var(--green-line);padding:5px 14px;border-radius:20px;font-size:.78rem;margin-bottom:10px;}
+.page-header p{color:var(--ink-dim);}
 
-  .footprint-form{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;}
-  .f-row{margin-bottom:16px;}
-  .f-row label{display:block;font-size:.9rem;margin-bottom:6px;color:var(--ink-dim);}
-  .f-row select{
-    width:100%;padding:10px;background:var(--bg-soft);color:var(--ink);
-    border:1px solid var(--line);border-radius:var(--radius);font-family:inherit;font-size:.95rem;
-  }
-  .calc-btn{
-    background:var(--forest-bright);color:#0e1712;border:none;padding:11px 22px;
-    border-radius:var(--radius);font-family:inherit;font-weight:700;cursor:pointer;font-size:.95rem;
-  }
-  .calc-btn:hover{opacity:.9;}
-  .result-box{margin-top:18px;padding:16px;border:1px solid var(--forest-bright);border-radius:var(--radius);display:none;}
-  .result-box.show{display:block;}
-  .result-box .score{font-size:2rem;font-family:'Fraunces',serif;color:var(--forest-bright);}
+.clock-hero-image{width:100%;max-height:220px;object-fit:cover;border-radius:16px;margin-bottom:20px;}
+.boundaries-grid{display:grid;grid-template-columns:1fr;gap:12px;padding:0 20px 50px;max-width:800px;margin:0 auto;}
+@media(min-width:700px){.boundaries-grid{grid-template-columns:1fr 1fr;}}
+.boundary-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;}
+.boundary-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.boundary-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.level-danger .boundary-dot,.level-danger .boundary-bar-fill{background:var(--danger);}
+.level-warning .boundary-dot,.level-warning .boundary-bar-fill{background:var(--warn);}
+.level-safe .boundary-dot,.level-safe .boundary-bar-fill{background:var(--green);}
+.boundary-name{font-weight:700;font-size:.95rem;}
+.boundary-status{font-size:.78rem;color:var(--ink-dim);}
+.boundary-bar-track{height:7px;background:var(--bg2);border-radius:5px;overflow:hidden;margin-bottom:6px;}
+.boundary-bar-fill{height:100%;border-radius:5px;transition:width 1s ease;}
+.boundary-pct{text-align:end;font-size:.8rem;font-weight:700;color:var(--ink-dim);}
 
-  .team-grid{display:grid;grid-template-columns:1fr;gap:14px;}
-  @media(min-width:640px){.team-grid{grid-template-columns:1fr 1fr;}}
-  .team-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;}
-  .team-card h3{font-size:1.05rem;margin-bottom:4px;}
-  .team-card .role{color:var(--forest-bright);font-size:.85rem;margin-bottom:8px;}
-  .team-card p{color:var(--ink-dim);font-size:.88rem;margin:0;}
+.fc-chain{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 20px 50px;}
+.fc-node{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 26px;text-align:center;cursor:pointer;min-width:150px;transition:opacity .4s, transform .3s;}
+.fc-node:hover{border-color:var(--green-line);}
+.fc-node.fc-removed{opacity:.28;}
+.fc-emoji{font-size:1.8rem;}
+.fc-name{font-size:.88rem;margin-top:4px;font-weight:700;}
+.fc-arrow{color:var(--ink-dim);}
+.fc-hint{text-align:center;color:var(--ink-dim);font-size:.82rem;}
+.fc-reset-btn{display:block;margin:14px auto 0;background:var(--green);color:#08130d;border:none;padding:10px 22px;border-radius:10px;font-weight:700;cursor:pointer;}
 
-  .help-item{padding:14px 0;border-bottom:1px solid var(--line);}
-  .help-item h3{font-size:1rem;margin-bottom:4px;}
-  .help-item p{color:var(--ink-dim);font-size:.9rem;margin:0;}
+.impact-content{display:flex;flex-direction:column;align-items:center;gap:24px;padding:10px 20px 60px;max-width:640px;margin:0 auto;}
+.impact-meter{position:relative;width:150px;height:150px;}
+.impact-meter svg{width:100%;height:100%;transform:rotate(-90deg);}
+.meter-bg{fill:none;stroke:var(--line);stroke-width:10;}
+.meter-fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.impact-meter-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.impact-score-value{font-size:1.7rem;font-weight:700;font-family:'Fraunces',serif;}
+.impact-score-label{font-size:.8rem;color:var(--ink-dim);}
+.impact-options{width:100%;display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:600px){.impact-options{grid-template-columns:1fr 1fr;}}
+.impact-category label{display:block;font-size:.85rem;color:var(--ink-dim);margin-bottom:6px;}
+.impact-category select{width:100%;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);}
+.impact-tips{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;}
+.impact-tips ul{margin:8px 0 0;padding-inline-start:20px;}
+.impact-tips li{margin-bottom:6px;font-size:.9rem;}
 
-  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--ink-dim);font-size:.82rem;text-align:center;}
-  .back-link{display:inline-block;margin-bottom:16px;color:var(--forest-bright);cursor:pointer;font-size:.9rem;}
+.drama-stages{display:flex;justify-content:center;gap:10px;padding:10px 20px;flex-wrap:wrap;}
+.drama-stage-btn{background:var(--panel);border:2px solid var(--line);color:var(--ink);padding:10px 20px;border-radius:14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.9rem;}
+.drama-stage-btn.active{border-color:var(--green);}
+.drama-scene{max-width:700px;margin:20px auto 60px;padding:0 20px;}
+.drama-scene-bg{height:180px;border-radius:16px;margin-bottom:16px;background-size:cover;background-position:center;}
+.drama-scene-bg.beauty{background-image:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1000&q=70');}
+.drama-scene-bg.warning{background-image:linear-gradient(rgba(80,60,10,.25),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1500534623283-312aade485b7?w=1000&q=70');}
+.drama-scene-bg.collapse{background-image:linear-gradient(rgba(80,10,10,.3),rgba(0,0,0,.6)),url('https://images.unsplash.com/photo-1602491453631-e2a5ad90a131?w=1000&q=70');}
+.drama-scene-text{text-align:center;}
+.drama-stats-list{text-align:start;max-width:420px;margin:14px auto 0;padding-inline-start:20px;color:var(--ink-dim);font-size:.9rem;}
+
+.help-sections{display:grid;grid-template-columns:1fr;gap:12px;padding:20px 20px 60px;max-width:700px;margin:0 auto;}
+@media(min-width:640px){.help-sections{grid-template-columns:1fr 1fr;}}
+.help-section{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .2s, transform .2s;}
+.help-section:hover{border-color:var(--green-line);transform:translateY(-2px);}
+.help-section-icon{font-size:1.5rem;}
+.help-section h3{font-size:1rem;margin-bottom:4px;}
+.help-section p{color:var(--ink-dim);font-size:.85rem;margin:0;}
+
+.story-timeline{display:flex;flex-direction:column;gap:16px;padding:0 20px;max-width:640px;margin:0 auto 30px;}
+.story-item{display:flex;gap:14px;align-items:flex-start;}
+.story-icon{font-size:1.4rem;}
+.story-content h4{font-size:1rem;margin-bottom:2px;}
+.story-content p{color:var(--ink-dim);font-size:.88rem;margin:0;}
+.team-intro{text-align:center;color:var(--ink-dim);max-width:520px;margin:0 auto 20px;}
+.team-grid{display:grid;grid-template-columns:1fr;gap:16px;padding:0 20px 60px;max-width:700px;margin:0 auto;}
+@media(min-width:600px){.team-grid{grid-template-columns:1fr 1fr;}}
+.team-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;}
+.team-avatar{font-size:2.2rem;margin-bottom:8px;}
+.team-role{display:block;color:var(--green);font-size:.85rem;margin-bottom:8px;}
+.team-bio{color:var(--ink-dim);font-size:.85rem;margin-bottom:10px;}
+.team-badge{display:inline-block;background:var(--green-dim);color:var(--green);font-size:.78rem;padding:5px 12px;border-radius:16px;}
+
+.env-detail-page{max-width:800px;margin:20px auto 60px;padding:0 20px;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--green-dim);border:1px solid var(--green-line);color:var(--green);padding:9px 18px;border-radius:12px;cursor:pointer;font-size:.85rem;margin-bottom:20px;}
+.env-hero-image{position:relative;width:100%;height:240px;border-radius:18px;overflow:hidden;margin-bottom:24px;}
+.env-hero-image img{width:100%;height:100%;object-fit:cover;}
+.env-icon-badge{position:absolute;top:16px;right:16px;font-size:1.8rem;background:rgba(0,0,0,.45);padding:9px 12px;border-radius:14px;}
+.env-info{text-align:center;margin-bottom:24px;}
+.env-info h2{color:var(--green);font-size:1.8rem;}
+.env-desc-text{color:var(--ink-dim);margin-bottom:12px;}
+.env-report-text{line-height:1.85;padding:16px;background:var(--green-dim);border-radius:14px;border-inline-start:3px solid var(--green);font-size:.95rem;}
+.stats-title{text-align:center;color:var(--green);font-size:1.1rem;margin:24px 0 12px;}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--green-dim);border:1px solid var(--green-line);border-radius:12px;padding:14px;text-align:center;}
+.stat-value{display:block;font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;color:var(--green);}
+.stat-label{display:block;font-size:.75rem;color:var(--ink-dim);margin-top:3px;}
+.video-container h3{text-align:center;color:var(--green);font-size:1.05rem;margin-bottom:12px;}
+.video-container iframe{width:100%;height:220px;border:none;border-radius:14px;}
+.explore-360-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:360px;margin:24px auto 0;background:var(--green);color:#08130d;border:none;padding:14px;border-radius:40px;font-weight:700;font-size:1rem;cursor:pointer;}
+.env-360-container{position:relative;width:100%;height:280px;border-radius:18px;overflow-x:scroll;overflow-y:hidden;cursor:grab;scrollbar-width:none;margin-bottom:20px;}
+.env-360-container::-webkit-scrollbar{display:none;}
+.env-360-image{width:200%;height:100%;background-size:cover;background-position:center;}
+.env-360-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;padding:6px 16px;border-radius:20px;font-size:.75rem;}
+
+footer.app-footer{text-align:center;color:var(--ink-dim);font-size:.8rem;padding:30px 20px;border-top:1px solid var(--line);}
 </style>
 </head>
-<body data-theme="dark" dir="rtl">
+<body data-theme="dark">
 
-<header class="top">
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand"><span class="pulse"></span><span id="brandText">نبض الأرض</span></div>
-      <div class="controls">
-        <button class="ctrl-btn" id="langBtn">EN</button>
-        <button class="ctrl-btn" id="themeBtn">☾</button>
-      </div>
-    </div>
-    <nav class="tabs" id="tabs">
-      <button data-page="home" class="active">الرئيسية</button>
-      <button data-page="clock">الساعة الكوكبية</button>
-      <button data-page="footprint">الأثر الشخصي</button>
-      <button data-page="about">من نحن</button>
-      <button data-page="help">المساعدة</button>
-    </nav>
+<div id="loading">
+  <div class="pulse-circle"></div>
+  <h1 class="loading-title">نبض الأرض</h1>
+  <p class="loading-subtitle">EARTH'S PULSE</p>
+  <div class="loading-bar-track"><div class="loading-bar-fill" id="loadBar" style="width:0%"></div></div>
+</div>
+
+<nav class="navbar">
+  <button class="hamburger-btn" id="hamburger"><span></span><span></span><span></span></button>
+  <div class="nav-left" id="navLeft"></div>
+  <div class="brand-mini"><span class="dot"></span><span id="brandText">نبض الأرض</span></div>
+  <div class="nav-controls">
+    <button class="nav-btn" id="langBtn">EN</button>
+    <button class="theme-toggle" id="themeToggle"><span class="knob">☾</span></button>
   </div>
-</header>
+</nav>
+<div class="mobile-menu" id="mobileMenu" style="display:none;"></div>
 
-<main class="wrap">
+<main class="wrap" id="main">
 
-  <!-- HOME -->
-  <section class="page active" data-page="home">
-    <div class="hero">
-      <h1 id="homeTitle">استكشف نبض الكوكب</h1>
-      <p id="homeSub">ثلاث بيئات حيوية تحكي قصة التغيّر. اضغط على أي بطاقة لاستكشاف الأرقام والحقائق.</p>
-    </div>
-    <div class="env-grid" id="envGrid">
-      <div class="env-card" data-env="forest">
-        <span class="icon">🌲</span>
-        <h3>الغابة</h3>
-        <p>تنتج 20% من أكسجين الأرض، وتفقد 10 ملايين هكتار سنوياً.</p>
-      </div>
-      <div class="env-card" data-env="ocean">
-        <span class="icon">🌊</span>
-        <h3>المحيط</h3>
-        <p>يغطي 70% من سطح الكوكب، وحموضته ارتفعت 30% منذ 1850.</p>
-      </div>
-      <div class="env-card" data-env="polar">
-        <span class="icon">❄️</span>
-        <h3>القطب</h3>
-        <p>فقد 3 تريليون طن من الجليد، وحرارته ارتفعت 3 درجات مئوية.</p>
-      </div>
-    </div>
-    <div class="env-detail" id="envDetail" style="display:none;"></div>
+  <section class="page active" id="page-home">
+    <header class="hero">
+      <div class="badge"><span class="bdot"></span><span id="heroBadge">مراقبة كوكبية حية</span></div>
+      <h1 id="heroTitle">نبض الأرض</h1>
+      <p id="heroTagline">منصة لمراقبة نبض كوكبنا — الغابات والمحيطات والقطب</p>
+    </header>
+    <section class="cards" id="envCards"></section>
+    <div class="scroll-hint"><span id="scrollHintText">مرر لأسفل</span><div class="scroll-arrow">↓</div></div>
   </section>
 
-  <!-- PLANETARY CLOCK -->
-  <section class="page" data-page="clock">
-    <div class="hero">
-      <h1>الساعة الكوكبية</h1>
-      <p>الحدود التسعة لسلامة الأرض، ومدى اقترابنا من تجاوز كل حد.</p>
+  <section class="page" id="page-clock">
+    <img class="clock-hero-image" src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=1000&q=70" alt="">
+    <div class="page-header">
+      <span class="page-badge">🕐</span>
+      <h2 id="clockTitle">الساعة الكوكبية</h2>
+      <p id="clockDesc"></p>
     </div>
-    <div id="boundaryList"></div>
+    <div class="boundaries-grid" id="boundariesGrid"></div>
   </section>
 
-  <!-- FOOTPRINT -->
-  <section class="page" data-page="footprint">
-    <div class="hero">
-      <h1>الأثر الشخصي</h1>
-      <p>احسب بصمتك البيئية اليومية بناءً على اختياراتك.</p>
+  <section class="page" id="page-foodchain">
+    <div class="page-header">
+      <span class="page-badge">🔗</span>
+      <h2 id="fcTitle">السلسلة الغذائية التفاعلية</h2>
+      <p id="fcSubtitle"></p>
+      <p class="fc-hint" id="fcHint"></p>
     </div>
-    <div class="footprint-form">
-      <div class="f-row">
-        <label>وسيلة التنقل اليومية</label>
-        <select id="q-transport">
-          <option value="1">مشي أو دراجة</option>
-          <option value="2">مواصلات عامة</option>
-          <option value="4">سيارة شخصية</option>
-          <option value="6">سيارة كبيرة / رحلة يومية طويلة</option>
-        </select>
+    <div class="fc-chain" id="fcChain"></div>
+    <button class="fc-reset-btn" id="fcResetBtn" style="display:none;">إعادة تعيين</button>
+  </section>
+
+  <section class="page" id="page-impact">
+    <div class="page-header">
+      <span class="page-badge">🌱</span>
+      <h2 id="impactTitle"></h2>
+      <p id="impactDesc"></p>
+    </div>
+    <div class="impact-content">
+      <div class="impact-meter">
+        <svg viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" class="meter-bg"/>
+          <circle cx="60" cy="60" r="50" class="meter-fill" id="meterFill" style="stroke-dasharray:0 314;stroke:#22c55e"/>
+        </svg>
+        <div class="impact-meter-center">
+          <span class="impact-score-value" id="scoreValue">0%</span>
+          <span class="impact-score-label" id="scoreLabel"></span>
+        </div>
       </div>
-      <div class="f-row">
-        <label>نوع الغذاء الأساسي</label>
-        <select id="q-food">
-          <option value="1">نباتي بالكامل</option>
-          <option value="2">نباتي مع القليل من اللحوم</option>
-          <option value="4">لحوم يومياً</option>
-        </select>
+      <div class="impact-options">
+        <div class="impact-category"><label id="lblTransport"></label>
+          <select id="selTransport"></select></div>
+        <div class="impact-category"><label id="lblFood"></label>
+          <select id="selFood"></select></div>
+        <div class="impact-category"><label id="lblEnergy"></label>
+          <select id="selEnergy"></select></div>
+        <div class="impact-category"><label id="lblShopping"></label>
+          <select id="selShopping"></select></div>
       </div>
-      <div class="f-row">
-        <label>استهلاك الطاقة المنزلية</label>
-        <select id="q-energy">
-          <option value="1">منخفض / طاقة متجددة</option>
-          <option value="3">متوسط</option>
-          <option value="5">مرتفع</option>
-        </select>
-      </div>
-      <div class="f-row">
-        <label>عادات الاستهلاك (تسوق، بلاستيك)</label>
-        <select id="q-waste">
-          <option value="1">أحاول تقليل النفايات دائماً</option>
-          <option value="2">أحياناً</option>
-          <option value="4">نادراً ما أفكر بذلك</option>
-        </select>
-      </div>
-      <button class="calc-btn" id="calcBtn">احسب بصمتي</button>
-      <div class="result-box" id="resultBox">
-        <div class="score" id="scoreText"></div>
-        <p id="scoreDesc"></p>
+      <div class="impact-tips">
+        <h4 id="tipsTitle">💡 نصائح لتقليل الأثر</h4>
+        <ul id="tipsList"></ul>
       </div>
     </div>
   </section>
 
-  <!-- ABOUT -->
-  <section class="page" data-page="about">
-    <div class="hero">
-      <h1>من نحن</h1>
-      <p>نبض الأرض هو منصة تعليمية تفاعلية تهدف لرفع الوعي البيئي عبر تجربة بصرية مبسطة، بدلاً من عرض بيانات جامدة.</p>
+  <section class="page" id="page-drama">
+    <div class="page-header">
+      <span class="page-badge">🎭</span>
+      <h2 id="dramaTitle"></h2>
+      <p id="dramaSubtitle" style="font-weight:700;"></p>
+      <p id="dramaDesc"></p>
     </div>
-    <div class="team-grid">
-      <div class="team-card">
-        <h3>زينب هاني حسين</h3>
-        <div class="role">بكالوريوس علوم حاسوب وتكنولوجيا المعلومات — نظم معلومات حاسوبية</div>
-        <p>مطورة ومحللة نظم — مسؤولة عن بناء المنصة وربط بياناتها.</p>
-      </div>
-      <div class="team-card">
-        <h3>اية زياد</h3>
-        <div class="role">بكالوريوس إدارة أعمال</div>
-        <p>خبيرة إدارة أعمال واستراتيجيات — مسؤولة عن رؤية المشروع وخطته.</p>
+    <div class="drama-stages" id="dramaStages"></div>
+    <div class="drama-scene">
+      <div class="drama-scene-bg beauty" id="dramaSceneBg"></div>
+      <div class="drama-scene-text">
+        <h3 id="dramaStageName"></h3>
+        <p id="dramaStageDesc"></p>
+        <ul class="drama-stats-list" id="dramaStatsList" style="display:none;"></ul>
       </div>
     </div>
   </section>
 
-  <!-- HELP -->
-  <section class="page" data-page="help">
-    <div class="hero"><h1>المساعدة</h1></div>
-    <div class="help-item"><h3>الرئيسية</h3><p>تعرض البيئات الثلاث الأساسية؛ اضغط أي بطاقة لعرض تفاصيلها وإحصائياتها.</p></div>
-    <div class="help-item"><h3>الساعة الكوكبية</h3><p>تعرض الحدود التسعة لسلامة الأرض ونسبة اقتراب كل حد من نقطة اللاعودة.</p></div>
-    <div class="help-item"><h3>الأثر الشخصي</h3><p>أجب عن أربعة أسئلة بسيطة لتحصل على تقدير لبصمتك البيئية اليومية.</p></div>
-    <div class="help-item"><h3>من نحن</h3><p>تعرّف على فريق العمل خلف المشروع وأهدافه.</p></div>
+  <section class="page" id="page-help">
+    <div class="page-header">
+      <span class="page-badge">❓</span>
+      <h2 id="helpTitle"></h2>
+      <p id="helpText"></p>
+    </div>
+    <div class="help-sections" id="helpSections"></div>
+  </section>
+
+  <section class="page" id="page-about">
+    <div class="page-header">
+      <span class="page-badge">🌱</span>
+      <h2 id="aboutTitle"></h2>
+      <p id="aboutText"></p>
+    </div>
+    <h3 style="text-align:center;color:var(--green);" id="aboutStoryTitle"></h3>
+    <div class="story-timeline" id="storyTimeline"></div>
+    <h3 style="text-align:center;color:var(--green);" id="aboutTeamTitle"></h3>
+    <p class="team-intro" id="teamIntro"></p>
+    <div class="team-grid" id="teamGrid"></div>
+  </section>
+
+  <section class="page" id="page-environment">
+    <div class="env-detail-page">
+      <button class="back-btn" id="envBackBtn">← رجوع</button>
+      <div id="envReportView">
+        <div class="env-hero-image"><img id="envHeroImg" src="" alt=""><span class="env-icon-badge" id="envIconBadge"></span></div>
+        <div class="env-info">
+          <h2 id="envName"></h2>
+          <p class="env-desc-text" id="envDescText"></p>
+          <p class="env-report-text" id="envReportText"></p>
+        </div>
+        <h3 class="stats-title" id="quickFactsTitle">حقائق سريعة</h3>
+        <div class="stats-grid" id="envStatsGrid"></div>
+        <div class="video-container">
+          <h3 id="watchReportTitle">شاهد التقرير</h3>
+          <iframe id="envVideo" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <button class="explore-360-btn" id="explore360Btn"><span>🔄</span><span id="explore360Text">استكشف البيئة 360°</span></button>
+      </div>
+      <div id="env360View" style="display:none;">
+        <button class="back-btn" id="back360Btn">← العودة للتقرير</button>
+        <div class="env-360-container">
+          <div class="env-360-image" id="env360Image"></div>
+          <div class="env-360-hint">↔ اسحب للاستكشاف</div>
+        </div>
+      </div>
+    </div>
   </section>
 
 </main>
 
-<footer>نبض الأرض © 2026 — المعرفة هي الخطوة الأولى نحو التغيير.</footer>
+<footer class="app-footer"><p id="footerText">نبض الأرض © 2026 — مشروع تعليمي بيئي</p></footer>
 
 <script>
-const state = { lang:'ar', theme:'dark' };
-
-const boundaries = [
-  {ar:'التغيّر المناخي', en:'Climate Change', pct:85},
-  {ar:'فقدان التنوع الحيوي', en:'Biodiversity Loss', pct:90},
-  {ar:'تغيّر استخدام الأراضي', en:'Land-System Change', pct:65},
-  {ar:'تحمّض المحيطات', en:'Ocean Acidification', pct:35},
-  {ar:'المياه العذبة', en:'Freshwater Use', pct:40},
-  {ar:'النيتروجين والفوسفور', en:'Nitrogen & Phosphorus', pct:95},
-  {ar:'استنزاف الأوزون', en:'Ozone Depletion', pct:20},
-  {ar:'الهباء الجوي', en:'Atmospheric Aerosols', pct:55},
-  {ar:'المواد الكيميائية الجديدة', en:'Novel Entities', pct:88},
-];
-
-const envData = {
-  forest:{
-    icon:'🌲', ar:'الغابة', en:'Forest',
-    stats:[
-      ['المساحة المتبقية','~4 مليار هكتار'],
-      ['معدل الفقد السنوي','10 ملايين هكتار'],
-      ['نسبة الأكسجين المنتج','20%'],
-      ['التنوع البيولوجي','50% من أنواع الأرض'],
+const T = {
+  ar:{
+    badge:"مراقبة كوكبية حية", title:"نبض الأرض", tagline:"منصة لمراقبة نبض كوكبنا — الغابات والمحيطات والقطب",
+    langBtn:"EN", back:"← رجوع", scrollHint:"مرر لأسفل", footerText:"نبض الأرض © 2026 — مشروع تعليمي بيئي",
+    nav:{home:"الرئيسية",clock:"الساعة الكوكبية",foodchain:"السلسلة الغذائية",impact:"الأثر الشخصي",drama:"التدرج البيئي",help:"المساعدة",about:"من نحن"},
+    helpTitle:"المساعدة", helpText:"نبض الأرض منصة تفاعلية تأخذك في رحلة استكشاف لثلاث بيئات مهددة حول العالم.",
+    aboutTitle:"من نحن", aboutText:"نبض الأرض مشروع تعليمي يهدف لتوعية المستخدمين بالتحديات البيئية الحقيقية عبر تجربة بصرية وتفاعلية.",
+    aboutStory:"📖 قصتنا", aboutTeam:"👥 فريقنا", aboutTeamIntro:"نبض الأرض يجمع بين خبرة تقنية وإدارية لتقديم تجربة فريدة.",
+    story:[["💡 الفكرة","انطلق مشروع نبض الأرض من رؤية بسيطة: جعل المعلومات البيئية مفهومة ومتاحة للجميع."],
+           ["🎯 الهدف","نسعى لرفع الوعي البيئي من خلال محتوى تفاعلي يجمع بين المتعة والفائدة."],
+           ["🌍 الرؤية","نطمح لأن نكون منصة رائدة في مجال التوعية البيئية."]],
+    clockTitle:"الساعة الكوكبية", clockDesc:"مفهوم علمي يوضح الحدود الآمنة التي يجب أن يحافظ عليها البشر لضمان استقرار الحياة على كوكب الأرض.",
+    boundaries:[
+      {name:"التغيّر المناخي",status:"تجاوز الحد",level:"danger",pct:85},
+      {name:"فقدان التنوع الحيوي",status:"تجاوز الحد",level:"danger",pct:90},
+      {name:"تغيّر استخدام الأراضي",status:"قريب من الحد",level:"warning",pct:65},
+      {name:"تحمّض المحيطات",status:"ضمن الحد الآمن",level:"safe",pct:35},
+      {name:"المياه العذبة",status:"ضمن الحد الآمن",level:"safe",pct:40},
+      {name:"النيتروجين والفوسفور",status:"تجاوز الحد",level:"danger",pct:95},
+      {name:"استنزاف الأوزون",status:"ضمن الحد الآمن",level:"safe",pct:20},
+      {name:"الهباء الجوي",status:"قيد الدراسة",level:"warning",pct:55},
+      {name:"المواد الكيميائية الجديدة",status:"تجاوز الحد",level:"danger",pct:88}
     ],
-    video:'https://www.youtube.com',
+    fcTitle:"السلسلة الغذائية التفاعلية", fcSubtitle:"اضغط على أي كائن لتشاهد أثر اختفائه", fcHint:"الكائنات المتأثرة بالاختفاء ستظهر باهتة", fcReset:"إعادة تعيين",
+    species:[{id:'plankton',name:'العوالق',affects:['fish_small']},{id:'fish_small',name:'الأسماك الصغيرة',affects:['fish_big']},{id:'fish_big',name:'الأسماك الكبيرة',affects:['seal']},{id:'seal',name:'عجل البحر',affects:['bear']},{id:'bear',name:'الدب القطبي',affects:[]}],
+    impactTitle:"أثرك على الكوكب", impactDesc:"اختر أنشطتك اليومية لترى تأثيرها على صحة الكوكب",
+    impactLevels:{low:"منخفض 🌱",medium:"متوسط 🌿",high:"مرتفع 🌳",critical:"حرج 🔥"},
+    activities:{transport:"وسائل النقل",food:"الغذاء",energy:"الطاقة",shopping:"التسوق"},
+    transportOptions:{car:"سيارة",public:"مواصلات عامة",bike:"دراجة / مشي",electric:"سيارة كهربائية"},
+    foodOptions:{meat:"لحوم بكثرة",balanced:"متوازن",vegetarian:"نباتي",vegan:"نباتي صرف"},
+    energyOptions:{high:"استهلاك مرتفع",medium:"استهلاك متوسط",low:"استهلاك منخفض",renewable:"طاقة متجددة"},
+    shoppingOptions:{frequent:"تسوق متكرر",moderate:"تسوق معتدل",minimal:"تسوق محدود",sustainable:"مستدام"},
+    tips:{transport:"🚲 استخدم وسائل النقل العام",meat:"🥗 قلل من استهلاك اللحوم",energy:"💡 قلل استهلاك الكهرباء",shopping:"🛍️ قلل من التسوق غير الضروري",always:"🌱 ازرع شجرة لدعم البيئة"},
+    dramaTitle:"التدرج البيئي", dramaSubtitle:"ثلاث محطات، نفس المكان", dramaDesc:"من الجمال إلى الإنذار إلى الانهيار.",
+    dramaStages:{beauty:{name:"الجمال",desc:"غابات كثيفة، مياه صافية، هواء نقي، وتوازن طبيعي استمر آلاف السنين."},warning:{name:"الإنذار",desc:"تبدأ العلامات بالظهور: تراجع الغطاء الأخضر وتغيّر أنماط الطقس."},collapse:{name:"الانهيار",desc:"السبب البشري: إزالة الغابات، حرق الوقود الأحفوري، الزراعة الصناعية المكثفة."}},
+    dramaStats:["🌲 نفقد مساحات هائلة من الغابات كل سنة","🐾 معدل انقراض الأنواع اليوم أعلى بعشرات المرات","🌡️ ارتفعت حرارة الأرض أكثر من 1.1° مئوية"],
+    quickFacts:"حقائق سريعة", watchReport:"شاهد التقرير", explore360:"استكشف البيئة 360°", backToReport:"← العودة للتقرير",
+    envs:{
+      forest:{name:"الغابة",desc:"الرئة الخضراء للأرض",icon:"🌲",report:"تغطي الغابات المطيرة حوالي 6% من سطح الأرض، لكنها موطن لأكثر من 50% من التنوع البيولوجي العالمي. يتم فقدان حوالي 10 ملايين هكتار من الغابات سنوياً، أي ما يعادل 27 ملعب كرة قدم في الدقيقة.",
+        facts:[["نسبة الأكسجين","20%"],["المساحة المتبقية","~4 مليار هكتار"],["معدل الفقد السنوي","10 ملايين هكتار"],["التنوع البيولوجي","50% من الأنواع"]], video:"https://www.youtube.com/embed/JkaxUblCGz0"},
+      ocean:{name:"المحيط",desc:"قلب الحياة الأزرق",icon:"🌊",report:"تغطي المحيطات 71% من سطح الأرض وتحتوي على 97% من مياه الكوكب. منذ الثورة الصناعية، زادت حموضة المحيطات بنسبة 30%، مما يهدد الحياة البحرية والشعاب المرجانية التي تدعم ربع الأنواع البحرية.",
+        facts:[["نسبة الأكسجين","50%"],["المساحة","361 مليون كم²"],["ارتفاع الحموضة","30% منذ 1850"],["الشعاب المهددة","75%"]], video:"https://www.youtube.com/embed/2SVs0R8opGg"},
+      arctic:{name:"القطب",desc:"حارس التوازن المناخي",icon:"❄️",report:"فقدت القارة القطبية الجنوبية أكثر من 3 تريليون طن من الجليد بين عامي 1992 و2017. إذا ذاب كل الجليد في جرينلاند، سيرتفع مستوى سطح البحر بـ 7 أمتار.",
+        facts:[["فقدان الجليد","3 تريليون طن"],["ارتفاع الحرارة","+3°C في القطب"],["ارتفاع البحر","7 أمتار"],["ذوبان سنوي","~280 مليار طن"]], video:"https://www.youtube.com/embed/0vHcV0Fk4eE"}
+    }
   },
-  ocean:{
-    icon:'🌊', ar:'المحيط', en:'Ocean',
-    stats:[
-      ['المساحة','361 مليون كم²'],
-      ['نسبة الأكسجين المنتج','50%'],
-      ['ارتفاع الحموضة منذ 1850','30%'],
-      ['الشعاب المرجانية المهددة','75%'],
+  en:{
+    badge:"Live planetary monitoring", title:"EARTH'S PULSE", tagline:"A platform for monitoring the pulse of our planet",
+    langBtn:"AR", back:"← Back", scrollHint:"Scroll down", footerText:"Earth's Pulse © 2026 — An Environmental Educational Project",
+    nav:{home:"Home",clock:"Planetary Clock",foodchain:"Food Chain",impact:"Personal Impact",drama:"Environmental Gradient",help:"Help",about:"About Us"},
+    helpTitle:"Help", helpText:"Earth's Pulse is an interactive platform that takes you on a journey exploring three endangered environments.",
+    aboutTitle:"About Us", aboutText:"Earth's Pulse is an educational project aimed at raising awareness about real environmental challenges.",
+    aboutStory:"📖 Our Story", aboutTeam:"👥 Our Team", aboutTeamIntro:"Earth's Pulse combines technical and business expertise for a unique experience.",
+    story:[["💡 The Idea","Earth's Pulse started from a simple vision: making environmental information accessible to everyone."],
+           ["🎯 The Goal","We strive to raise environmental awareness through interactive, enjoyable content."],
+           ["🌍 The Vision","We aspire to be a leading platform in environmental awareness."]],
+    clockTitle:"Planetary Clock", clockDesc:"A scientific concept showing the safe limits humanity must maintain to ensure life remains stable on Earth.",
+    boundaries:[
+      {name:"Climate Change",status:"Exceeded",level:"danger",pct:85},
+      {name:"Biodiversity Loss",status:"Exceeded",level:"danger",pct:90},
+      {name:"Land-Use Change",status:"Near Limit",level:"warning",pct:65},
+      {name:"Ocean Acidification",status:"Within Safe Zone",level:"safe",pct:35},
+      {name:"Freshwater Use",status:"Within Safe Zone",level:"safe",pct:40},
+      {name:"Nitrogen & Phosphorus",status:"Exceeded",level:"danger",pct:95},
+      {name:"Ozone Depletion",status:"Within Safe Zone",level:"safe",pct:20},
+      {name:"Atmospheric Aerosols",status:"Under Study",level:"warning",pct:55},
+      {name:"Novel Chemicals",status:"Exceeded",level:"danger",pct:88}
     ],
-    video:'https://www.youtube.com',
-  },
-  polar:{
-    icon:'❄️', ar:'القطب', en:'Polar',
-    stats:[
-      ['فقدان الجليد','3 تريليون طن'],
-      ['ارتفاع الحرارة بالقطب','+3°C'],
-      ['ارتفاع مستوى البحر المتوقع','7 أمتار'],
-      ['ذوبان الجليد السنوي','~280 مليار طن'],
-    ],
-    video:'https://www.youtube.com',
+    fcTitle:"Interactive Food Chain", fcSubtitle:"Click any species to see the impact of its disappearance", fcHint:"Affected species will appear faded", fcReset:"Reset",
+    species:[{id:'plankton',name:'Plankton',affects:['fish_small']},{id:'fish_small',name:'Small Fish',affects:['fish_big']},{id:'fish_big',name:'Big Fish',affects:['seal']},{id:'seal',name:'Seal',affects:['bear']},{id:'bear',name:'Polar Bear',affects:[]}],
+    impactTitle:"Your Impact on Earth", impactDesc:"Choose your daily activities to see their effect on planetary health",
+    impactLevels:{low:"Low 🌱",medium:"Medium 🌿",high:"High 🌳",critical:"Critical 🔥"},
+    activities:{transport:"Transport",food:"Food",energy:"Energy",shopping:"Shopping"},
+    transportOptions:{car:"Car",public:"Public Transport",bike:"Bike / Walk",electric:"Electric Car"},
+    foodOptions:{meat:"High Meat",balanced:"Balanced",vegetarian:"Vegetarian",vegan:"Vegan"},
+    energyOptions:{high:"High Consumption",medium:"Medium Consumption",low:"Low Consumption",renewable:"Renewable Energy"},
+    shoppingOptions:{frequent:"Frequent Shopping",moderate:"Moderate Shopping",minimal:"Minimal Shopping",sustainable:"Sustainable"},
+    tips:{transport:"🚲 Use public transport",meat:"🥗 Reduce meat consumption",energy:"💡 Reduce electricity consumption",shopping:"🛍️ Reduce unnecessary shopping",always:"🌱 Plant a tree to support the environment"},
+    dramaTitle:"Environmental Gradient", dramaSubtitle:"Three stages, one place", dramaDesc:"From beauty to warning to collapse.",
+    dramaStages:{beauty:{name:"Beauty",desc:"Dense forests, clear waters, fresh air, and natural balance."},warning:{name:"Warning",desc:"Signs begin to appear: declining green cover, changing weather patterns."},collapse:{name:"Collapse",desc:"Human causes: deforestation, burning fossil fuels, intensive agriculture."}},
+    dramaStats:["🌲 We lose huge areas of forests every year","🐾 Today's extinction rate is tens of times higher","🌡️ Earth's temperature has risen more than 1.1°C"],
+    quickFacts:"Quick Facts", watchReport:"Watch Report", explore360:"Explore Environment 360°", backToReport:"← Back to Report",
+    envs:{
+      forest:{name:"Forest",desc:"The green lungs of Earth",icon:"🌲",report:"Rainforests cover about 6% of Earth's surface, but are home to over 50% of global biodiversity. Approximately 10 million hectares of forest are lost annually.",
+        facts:[["Oxygen produced","20%"],["Remaining area","~4 billion ha"],["Annual loss","10 million ha"],["Biodiversity","50% of species"]], video:"https://www.youtube.com/embed/JkaxUblCGz0"},
+      ocean:{name:"Ocean",desc:"The blue heart of life",icon:"🌊",report:"Oceans cover 71% of Earth's surface and contain 97% of the planet's water. Since the Industrial Revolution, ocean acidity has increased by 30%.",
+        facts:[["Oxygen produced","50%"],["Area","361 million km²"],["Acidity increase","30% since 1850"],["Coral threatened","75%"]], video:"https://www.youtube.com/embed/2SVs0R8opGg"},
+      arctic:{name:"Arctic",desc:"Guardian of climate balance",icon:"❄️",report:"Antarctica has lost more than 3 trillion tons of ice between 1992 and 2017. If all of Greenland's ice melted, sea levels would rise by 7 meters.",
+        facts:[["Ice loss","3 trillion tons"],["Temperature rise","+3°C in Arctic"],["Sea level rise","7 meters"],["Annual melt","~280 billion tons"]], video:"https://www.youtube.com/embed/0vHcV0Fk4eE"}
+    }
   }
 };
 
-function renderBoundaries(){
-  const list = document.getElementById('boundaryList');
-  list.innerHTML = boundaries.map(b=>{
-    const level = b.pct>=75?'level-high':(b.pct>=45?'level-mid':'level-low');
-    const label = state.lang==='ar'?b.ar:b.en;
-    return `<div class="boundary ${level}">
-      <div class="boundary-head"><span>${label}</span><span class="pct">${b.pct}%</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${b.pct}%"></div></div>
+const images = {
+  forest:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=900&q=70',
+  ocean:'https://images.unsplash.com/photo-1439405326854-014607f694d7?w=900&q=70',
+  arctic:'https://images.unsplash.com/photo-1517783999520-f068d7431a60?w=900&q=70'
+};
+const speciesEmoji = {plankton:'🦠',fish_small:'🐟',fish_big:'🐠',seal:'🦭',bear:'🐻‍❄️'};
+
+const S = {
+  lang: localStorage.getItem('ep-lang') || 'ar',
+  theme: localStorage.getItem('ep-theme') || 'dark',
+  page: 'home',
+  removed: [],
+  transport:'car', food:'meat', energy:'high', shopping:'frequent',
+  drama:'beauty',
+  selectedEnv: null,
+  show360:false
+};
+
+function t(){ return T[S.lang]; }
+
+const pageIds = ['home','clock','foodchain','impact','drama','help','about','environment'];
+function goTo(p, env){
+  if(env) S.selectedEnv = env;
+  S.page = p;
+  S.show360 = false;
+  pageIds.forEach(id=>document.getElementById('page-'+id).classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('mobileMenu').style.display='none';
+  window.scrollTo({top:0, behavior:'smooth'});
+  renderAll();
+}
+
+function renderNav(){
+  const navKeys = ['home','clock','foodchain','impact','drama','help','about'];
+  const tr = t();
+  document.getElementById('navLeft').innerHTML = navKeys.map(k=>
+    `<button class="nav-link ${S.page===k?'active':''}" data-nav="${k}">${tr.nav[k]}</button>`
+  ).join('');
+  document.getElementById('mobileMenu').innerHTML = navKeys.map(k=>
+    `<button class="mobile-menu-link ${S.page===k?'active':''}" data-nav="${k}">${tr.nav[k]}</button>`
+  ).join('');
+  document.getElementById('brandText').textContent = S.lang==='ar'?'نبض الأرض':"Earth's Pulse";
+  document.getElementById('langBtn').textContent = tr.langBtn;
+  document.getElementById('footerText').textContent = tr.footerText;
+}
+
+function renderHome(){
+  const tr = t();
+  document.getElementById('heroBadge').textContent = tr.badge;
+  document.getElementById('heroTitle').textContent = tr.title;
+  document.getElementById('heroTagline').textContent = tr.tagline;
+  document.getElementById('scrollHintText').textContent = tr.scrollHint;
+  const keys = ['forest','ocean','arctic'];
+  document.getElementById('envCards').innerHTML = keys.map(k=>{
+    const e = tr.envs[k];
+    return `<div class="card" style="background-image:url('${images[k]}')" data-env="${k}">
+      <span class="card-icon-badge">${e.icon}</span>
+      <div class="overlay"><h3>${e.name}</h3><p>${e.desc}</p><span class="btn-link">${S.lang==='ar'?'استكشف':'Explore'} →</span></div>
     </div>`;
   }).join('');
 }
 
-function showEnvDetail(key){
-  const e = envData[key];
-  const box = document.getElementById('envDetail');
-  const name = state.lang==='ar'?e.ar:e.en;
-  box.style.display = 'block';
-  box.innerHTML = `
-    <span class="back-link" id="closeDetail">← ${state.lang==='ar'?'إغلاق':'Close'}</span>
-    <h2>${e.icon} ${name}</h2>
-    ${e.stats.map(s=>`<div class="stat-row"><span>${s[0]}</span><b>${s[1]}</b></div>`).join('')}
-    <a class="video-link" href="${e.video}" target="_blank">${state.lang==='ar'?'مشاهدة فيديو توضيحي':'Watch explainer video'}</a>
-  `;
-  document.getElementById('closeDetail').onclick = ()=>{ box.style.display='none'; };
-  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+function renderClock(){
+  const tr = t();
+  document.getElementById('clockTitle').textContent = tr.clockTitle;
+  document.getElementById('clockDesc').textContent = tr.clockDesc;
+  document.getElementById('boundariesGrid').innerHTML = tr.boundaries.map(b=>`
+    <div class="boundary-card level-${b.level}">
+      <div class="boundary-top"><span class="boundary-dot"></span>
+        <div><div class="boundary-name">${b.name}</div><div class="boundary-status">${b.status}</div></div>
+      </div>
+      <div class="boundary-bar-track"><div class="boundary-bar-fill" style="width:${b.pct}%"></div></div>
+      <div class="boundary-pct">${b.pct}%</div>
+    </div>`).join('');
 }
 
-document.getElementById('envGrid').addEventListener('click', (e)=>{
-  const card = e.target.closest('.env-card');
-  if(card) showEnvDetail(card.dataset.env);
+function renderFoodchain(){
+  const tr = t();
+  document.getElementById('fcTitle').textContent = tr.fcTitle;
+  document.getElementById('fcSubtitle').textContent = tr.fcSubtitle;
+  document.getElementById('fcHint').textContent = tr.fcHint;
+  document.getElementById('fcResetBtn').textContent = tr.fcReset;
+  document.getElementById('fcResetBtn').style.display = S.removed.length ? 'block':'none';
+  document.getElementById('fcChain').innerHTML = tr.species.map((sp,i)=>{
+    const removed = S.removed.includes(sp.id);
+    const arrow = i < tr.species.length-1 ? '<div class="fc-arrow">↓</div>' : '';
+    return `<div class="fc-node ${removed?'fc-removed':''}" data-sp="${sp.id}"><div class="fc-emoji">${speciesEmoji[sp.id]}</div><div class="fc-name">${sp.name}</div></div>${arrow}`;
+  }).join('');
+}
+
+function calcImpact(){
+  const scores = {
+    transport:{car:80,public:40,bike:10,electric:30},
+    food:{meat:70,balanced:40,vegetarian:20,vegan:10},
+    energy:{high:90,medium:50,low:25,renewable:10},
+    shopping:{frequent:60,moderate:35,minimal:15,sustainable:10}
+  };
+  return Math.min(100, scores.transport[S.transport]+scores.food[S.food]+scores.energy[S.energy]+scores.shopping[S.shopping]);
+}
+function impactLevel(score, tr){
+  if(score<30) return {text:tr.impactLevels.low, color:'#22c55e'};
+  if(score<50) return {text:tr.impactLevels.medium, color:'#f59e0b'};
+  if(score<70) return {text:tr.impactLevels.high, color:'#f97316'};
+  return {text:tr.impactLevels.critical, color:'#ef4444'};
+}
+function renderImpact(){
+  const tr = t();
+  document.getElementById('impactTitle').textContent = tr.impactTitle;
+  document.getElementById('impactDesc').textContent = tr.impactDesc;
+  document.getElementById('lblTransport').textContent = tr.activities.transport;
+  document.getElementById('lblFood').textContent = tr.activities.food;
+  document.getElementById('lblEnergy').textContent = tr.activities.energy;
+  document.getElementById('lblShopping').textContent = tr.activities.shopping;
+
+  function fillSelect(id, opts, current){
+    document.getElementById(id).innerHTML = Object.entries(opts).map(([k,v])=>`<option value="${k}" ${k===current?'selected':''}>${v}</option>`).join('');
+  }
+  fillSelect('selTransport', tr.transportOptions, S.transport);
+  fillSelect('selFood', tr.foodOptions, S.food);
+  fillSelect('selEnergy', tr.energyOptions, S.energy);
+  fillSelect('selShopping', tr.shoppingOptions, S.shopping);
+
+  const score = calcImpact();
+  const level = impactLevel(score, tr);
+  document.getElementById('scoreValue').textContent = score+'%';
+  document.getElementById('scoreLabel').textContent = level.text;
+  document.getElementById('meterFill').style.stroke = level.color;
+  document.getElementById('meterFill').style.strokeDasharray = (score/100*314)+' 314';
+
+  const tips = [];
+  if(score>50) tips.push(tr.tips.transport);
+  if(S.food==='meat') tips.push(tr.tips.meat);
+  if(S.energy==='high') tips.push(tr.tips.energy);
+  if(S.shopping==='frequent') tips.push(tr.tips.shopping);
+  tips.push(tr.tips.always);
+  document.getElementById('tipsList').innerHTML = tips.map(x=>`<li>${x}</li>`).join('');
+}
+
+function renderDrama(){
+  const tr = t();
+  document.getElementById('dramaTitle').textContent = tr.dramaTitle;
+  document.getElementById('dramaSubtitle').textContent = tr.dramaSubtitle;
+  document.getElementById('dramaDesc').textContent = tr.dramaDesc;
+  const stages = ['beauty','warning','collapse'];
+  const icons = {beauty:'🌿',warning:'⚠️',collapse:'🔥'};
+  document.getElementById('dramaStages').innerHTML = stages.map(s=>
+    `<button class="drama-stage-btn ${S.drama===s?'active':''}" data-stage="${s}"><span>${icons[s]}</span><span>${tr.dramaStages[s].name}</span></button>`
+  ).join('');
+  document.getElementById('dramaSceneBg').className = 'drama-scene-bg '+S.drama;
+  const colors = {beauty:'#22c55e',warning:'#f59e0b',collapse:'#ef4444'};
+  const nameEl = document.getElementById('dramaStageName');
+  nameEl.textContent = tr.dramaStages[S.drama].name;
+  nameEl.style.color = colors[S.drama];
+  document.getElementById('dramaStageDesc').textContent = tr.dramaStages[S.drama].desc;
+  const list = document.getElementById('dramaStatsList');
+  if(S.drama==='collapse'){ list.style.display='block'; list.innerHTML = tr.dramaStats.map(s=>`<li>${s}</li>`).join(''); }
+  else list.style.display='none';
+}
+
+function renderHelp(){
+  const tr = t();
+  document.getElementById('helpTitle').textContent = tr.helpTitle;
+  document.getElementById('helpText').textContent = tr.helpText;
+  const items = [
+    ['home','🏠', tr.nav.home, S.lang==='ar'?'تعرض ثلاث بيئات رئيسية يمكنك استكشافها':'Displays three main environments to explore'],
+    ['clock','🕐', tr.nav.clock, S.lang==='ar'?'تعرض 9 حدود بيئية تحدد سلامة الكوكب':'Displays 9 environmental boundaries'],
+    ['foodchain','🔗', tr.nav.foodchain, S.lang==='ar'?'تظهر تأثير اختفاء كائن على الآخرين':'Shows impact of species disappearance'],
+    ['impact','🌱', tr.nav.impact, S.lang==='ar'?'احسب بصمتك البيئية اليومية':'Calculate your daily ecological footprint'],
+    ['drama','🎭', tr.nav.drama, S.lang==='ar'?'ثلاث مراحل بيئية: الجمال، الإنذار، الانهيار':'Three stages: Beauty, Warning, Collapse'],
+    ['about','👥', tr.nav.about, S.lang==='ar'?'تعرف على فريق العمل وقصة المشروع':'Learn about the team and project story'],
+  ];
+  document.getElementById('helpSections').innerHTML = items.map(([key,icon,title,desc])=>
+    `<div class="help-section" data-nav="${key}"><div class="help-section-icon">${icon}</div><div class="help-section-content"><h3>${title}</h3><p>${desc}</p></div></div>`
+  ).join('');
+}
+
+function renderAbout(){
+  const tr = t();
+  document.getElementById('aboutTitle').textContent = tr.aboutTitle;
+  document.getElementById('aboutText').textContent = tr.aboutText;
+  document.getElementById('aboutStoryTitle').textContent = tr.aboutStory;
+  document.getElementById('aboutTeamTitle').textContent = tr.aboutTeam;
+  document.getElementById('teamIntro').textContent = tr.aboutTeamIntro;
+  document.getElementById('storyTimeline').innerHTML = tr.story.map(([iconTitle,desc])=>{
+    const parts = iconTitle.split(' ');
+    const icon = parts[0];
+    const title = parts.slice(1).join(' ');
+    return `<div class="story-item"><span class="story-icon">${icon}</span><div class="story-content"><h4>${title}</h4><p>${desc}</p></div></div>`;
+  }).join('');
+  const teamAr = [
+    {name:'زينب هاني حسين', role:'مطورة ومحللة نظم', bio:'حاصلة على بكالوريوس علوم حاسوب وتكنولوجيا المعلومات - قسم نظم معلومات حاسوبية', badge:'💻 نظم معلومات', avatar:'👩‍💻'},
+    {name:'اية زياد', role:'خبيرة إدارة أعمال', bio:'حاصلة على بكالوريوس إدارة أعمال. تمتلك خبرة في التخطيط الاستراتيجي وإدارة المشاريع', badge:'📊 إدارة أعمال', avatar:'👩‍💼'}
+  ];
+  const teamEn = [
+    {name:'Zainab Hani Hussein', role:'Developer & Systems Analyst', bio:"Bachelor's in Computer Science & IT — Information Systems", badge:'💻 Information Systems', avatar:'👩‍💻'},
+    {name:'Aya Ziad', role:'Business Expert', bio:"Bachelor's in Business Administration, strategic planning & project management", badge:'📊 Business', avatar:'👩‍💼'}
+  ];
+  const team = S.lang==='ar'?teamAr:teamEn;
+  document.getElementById('teamGrid').innerHTML = team.map(m=>
+    `<div class="team-card"><div class="team-avatar">${m.avatar}</div><h4>${m.name}</h4><span class="team-role">${m.role}</span><p class="team-bio">${m.bio}</p><div class="team-badge">${m.badge}</div></div>`
+  ).join('');
+}
+
+function renderEnvironment(){
+  if(!S.selectedEnv) return;
+  const tr = t();
+  const e = tr.envs[S.selectedEnv];
+  document.getElementById('envBackBtn').textContent = tr.back;
+  document.getElementById('envHeroImg').src = images[S.selectedEnv];
+  document.getElementById('envIconBadge').textContent = e.icon;
+  document.getElementById('envName').textContent = e.name;
+  document.getElementById('envDescText').textContent = e.desc;
+  document.getElementById('envReportText').textContent = e.report;
+  document.getElementById('quickFactsTitle').textContent = tr.quickFacts;
+  document.getElementById('envStatsGrid').innerHTML = e.facts.map(f=>`<div class="stat-card"><span class="stat-value">${f[1]}</span><span class="stat-label">${f[0]}</span></div>`).join('');
+  document.getElementById('watchReportTitle').textContent = tr.watchReport;
+  document.getElementById('envVideo').src = e.video;
+  document.getElementById('explore360Text').textContent = tr.explore360;
+  document.getElementById('env360Image').style.backgroundImage = "url('"+images[S.selectedEnv]+"')";
+  document.getElementById('back360Btn').textContent = tr.backToReport;
+
+  document.getElementById('envReportView').style.display = S.show360 ? 'none':'block';
+  document.getElementById('env360View').style.display = S.show360 ? 'block':'none';
+}
+
+function renderAll(){
+  renderNav();
+  if(S.page==='home') renderHome();
+  if(S.page==='clock') renderClock();
+  if(S.page==='foodchain') renderFoodchain();
+  if(S.page==='impact') renderImpact();
+  if(S.page==='drama') renderDrama();
+  if(S.page==='help') renderHelp();
+  if(S.page==='about') renderAbout();
+  if(S.page==='environment') renderEnvironment();
+}
+
+document.body.addEventListener('click', (e)=>{
+  const navBtn = e.target.closest('[data-nav]');
+  if(navBtn){ goTo(navBtn.dataset.nav); return; }
+
+  const card = e.target.closest('.card[data-env]');
+  if(card){ goTo('environment', card.dataset.env); return; }
+
+  const spNode = e.target.closest('.fc-node');
+  if(spNode){
+    const id = spNode.dataset.sp;
+    const tr = t();
+    if(S.removed.includes(id)){
+      S.removed = S.removed.filter(x=>x!==id);
+    } else {
+      let cascade=[id], queue=[id];
+      while(queue.length){
+        const cur = queue.shift();
+        const sp = tr.species.find(s=>s.id===cur);
+        if(sp) sp.affects.forEach(a=>{ if(!cascade.includes(a)){cascade.push(a); queue.push(a);} });
+      }
+      S.removed = [...new Set([...S.removed, ...cascade])];
+    }
+    renderFoodchain();
+    return;
+  }
+  if(e.target.id==='fcResetBtn'){ S.removed=[]; renderFoodchain(); return; }
+
+  const stageBtn = e.target.closest('[data-stage]');
+  if(stageBtn){ S.drama = stageBtn.dataset.stage; renderDrama(); return; }
+
+  if(e.target.closest('#explore360Btn')){ S.show360=true; renderEnvironment(); return; }
+  if(e.target.id==='back360Btn'){ S.show360=false; renderEnvironment(); return; }
+  if(e.target.id==='envBackBtn'){ goTo('home'); return; }
 });
 
-// Tabs
-document.getElementById('tabs').addEventListener('click', (e)=>{
-  const btn = e.target.closest('button[data-page]');
-  if(!btn) return;
-  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const page = btn.dataset.page;
-  document.querySelectorAll('section.page').forEach(s=>s.classList.remove('active'));
-  document.querySelector(`section.page[data-page="${page}"]`).classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
+document.body.addEventListener('change', (e)=>{
+  if(e.target.id==='selTransport'){ S.transport=e.target.value; renderImpact(); }
+  if(e.target.id==='selFood'){ S.food=e.target.value; renderImpact(); }
+  if(e.target.id==='selEnergy'){ S.energy=e.target.value; renderImpact(); }
+  if(e.target.id==='selShopping'){ S.shopping=e.target.value; renderImpact(); }
 });
 
-// Footprint calculator
-document.getElementById('calcBtn').addEventListener('click', ()=>{
-  const vals = ['q-transport','q-food','q-energy','q-waste'].map(id=>parseInt(document.getElementById(id).value,10));
-  const total = vals.reduce((a,b)=>a+b,0); // range 4-21
-  let label, desc;
-  if(total<=8){ label = state.lang==='ar'?'بصمة منخفضة 🌱':'Low footprint 🌱'; desc = state.lang==='ar'?'اختياراتك اليومية داعمة للكوكب بشكل ملحوظ.':'Your daily choices are notably planet-friendly.'; }
-  else if(total<=14){ label = state.lang==='ar'?'بصمة متوسطة ⚖️':'Moderate footprint ⚖️'; desc = state.lang==='ar'?'هناك مساحة جيدة للتحسين في بعض العادات.':'There is good room to improve some habits.'; }
-  else { label = state.lang==='ar'?'بصمة مرتفعة 🔥':'High footprint 🔥'; desc = state.lang==='ar'?'اختياراتك الحالية تشكّل ضغطاً كبيراً على الموارد.':'Your current choices place heavy pressure on resources.'; }
-  const box = document.getElementById('resultBox');
-  document.getElementById('scoreText').textContent = label;
-  document.getElementById('scoreDesc').textContent = desc;
-  box.classList.add('show');
+document.getElementById('hamburger').addEventListener('click', ()=>{
+  const m = document.getElementById('mobileMenu');
+  m.style.display = m.style.display==='none' ? 'flex':'none';
 });
-
-// Theme toggle
-document.getElementById('themeBtn').addEventListener('click', ()=>{
-  state.theme = state.theme==='dark'?'light':'dark';
-  document.body.setAttribute('data-theme', state.theme);
-  document.getElementById('themeBtn').textContent = state.theme==='dark'?'☾':'☀';
-  localStorage.setItem('ep-theme', state.theme);
-});
-
-// Language toggle
-const translations = {
-  ar:{ brand:'نبض الأرض', homeTitle:'استكشف نبض الكوكب', homeSub:'ثلاث بيئات حيوية تحكي قصة التغيّر. اضغط على أي بطاقة لاستكشاف الأرقام والحقائق.', tabs:['الرئيسية','الساعة الكوكبية','الأثر الشخصي','من نحن','المساعدة'] },
-  en:{ brand:"Earth's Pulse", homeTitle:'Explore the pulse of the planet', homeSub:'Three living environments tell the story of change. Tap a card to explore the numbers.', tabs:['Home','Planetary Clock','Personal Footprint','About','Help'] }
-};
 
 document.getElementById('langBtn').addEventListener('click', ()=>{
-  state.lang = state.lang==='ar'?'en':'ar';
-  applyLang();
-  localStorage.setItem('ep-lang', state.lang);
+  S.lang = S.lang==='ar' ? 'en' : 'ar';
+  document.documentElement.lang = S.lang;
+  document.body.dir = S.lang==='ar' ? 'rtl' : 'ltr';
+  localStorage.setItem('ep-lang', S.lang);
+  renderAll();
 });
 
-function applyLang(){
-  const t = translations[state.lang];
-  document.documentElement.lang = state.lang;
-  document.body.dir = state.lang==='ar'?'rtl':'ltr';
-  document.getElementById('brandText').textContent = t.brand;
-  document.getElementById('homeTitle').textContent = t.homeTitle;
-  document.getElementById('homeSub').textContent = t.homeSub;
-  document.getElementById('langBtn').textContent = state.lang==='ar'?'EN':'AR';
-  document.querySelectorAll('nav.tabs button').forEach((b,i)=>{ b.textContent = t.tabs[i]; });
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  S.theme = S.theme==='dark' ? 'light':'dark';
+  document.body.setAttribute('data-theme', S.theme);
+  document.querySelector('#themeToggle .knob').textContent = S.theme==='dark'?'☾':'☀';
+  localStorage.setItem('ep-theme', S.theme);
+});
 
-  // env cards
-  const envNames = {forest:['الغابة','Forest'], ocean:['المحيط','Ocean'], polar:['القطب','Polar']};
-  document.querySelectorAll('.env-card').forEach(card=>{
-    const key = card.dataset.env;
-    card.querySelector('h3').textContent = state.lang==='ar'?envNames[key][0]:envNames[key][1];
-  });
-  renderBoundaries();
-  document.getElementById('envDetail').style.display='none';
-}
-
-// Init from storage
 (function init(){
-  const savedTheme = localStorage.getItem('ep-theme');
-  const savedLang = localStorage.getItem('ep-lang');
-  if(savedTheme){ state.theme = savedTheme; document.body.setAttribute('data-theme', savedTheme); document.getElementById('themeBtn').textContent = savedTheme==='dark'?'☾':'☀'; }
-  if(savedLang){ state.lang = savedLang; }
-  applyLang();
+  document.documentElement.lang = S.lang;
+  document.body.dir = S.lang==='ar' ? 'rtl':'ltr';
+  document.body.setAttribute('data-theme', S.theme);
+  document.querySelector('#themeToggle .knob').textContent = S.theme==='dark'?'☾':'☀';
+
+  let p = 0;
+  const bar = document.getElementById('loadBar');
+  const interval = setInterval(function(){ p = Math.min(100, p+6); bar.style.width = p+'%'; if(p>=100) clearInterval(interval); }, 60);
+  setTimeout(function(){ document.getElementById('loading').classList.add('hide'); }, 1400);
+
+  renderAll();
 })();
 </script>
 </body>
