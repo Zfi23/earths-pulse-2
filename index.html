@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نبض الأرض | Earth's Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Fraunces:ital,wght@0,400;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0e1712;
+    --bg-soft: #131f19;
+    --panel: #182720;
+    --line: rgba(233,231,221,0.12);
+    --ink: #e9e7dd;
+    --ink-dim: #a9b3ab;
+    --forest: #3c7a5c;
+    --forest-bright: #55a67c;
+    --ocean: #2f7f95;
+    --ice: #bfe3ea;
+    --amber: #d98e3f;
+    --danger: #c0563f;
+    --radius: 2px;
+  }
+  [data-theme="light"]{
+    --bg: #f3f1e7;
+    --bg-soft: #ece8d9;
+    --panel: #ffffff;
+    --line: rgba(20,30,25,0.12);
+    --ink: #16211b;
+    --ink-dim: #556358;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Tajawal', sans-serif;
+    line-height:1.6;
+    transition: background .35s ease, color .35s ease;
+    min-height:100vh;
+  }
+  body[dir="ltr"]{ font-family: 'Fraunces', 'Tajawal', serif; }
+  h1,h2,h3{ font-family:'Fraunces', 'Tajawal', serif; font-weight:600; margin:0 0 .3em; letter-spacing:.2px; }
+  a{color:inherit;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px;}
+
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;}
+  .brand .pulse{width:9px;height:9px;border-radius:50%;background:var(--forest-bright);box-shadow:0 0 0 0 rgba(85,166,124,.6);animation:pulse 2.4s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(85,166,124,.55);}
+    70%{box-shadow:0 0 0 10px rgba(85,166,124,0);}
+    100%{box-shadow:0 0 0 0 rgba(85,166,124,0);}
+  }
+  .controls{display:flex;gap:8px;}
+  .ctrl-btn{
+    background:transparent;border:1px solid var(--line);color:var(--ink);
+    padding:7px 12px;border-radius:var(--radius);font-family:inherit;font-size:.85rem;cursor:pointer;
+  }
+  .ctrl-btn:hover{border-color:var(--forest-bright);}
+  nav.tabs{display:flex;gap:2px;overflow-x:auto;padding-bottom:0;scrollbar-width:none;}
+  nav.tabs::-webkit-scrollbar{display:none;}
+  nav.tabs button{
+    background:none;border:none;color:var(--ink-dim);font-family:inherit;
+    padding:12px 14px;font-size:.92rem;white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;
+  }
+  nav.tabs button.active{color:var(--ink);border-bottom-color:var(--forest-bright);}
+
+  main{padding:36px 0 80px;}
+  section.page{display:none;}
+  section.page.active{display:block;animation:fadein .4s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .hero{padding:20px 0 30px;border-bottom:1px solid var(--line);margin-bottom:30px;}
+  .hero h1{font-size:2rem;}
+  .hero p{color:var(--ink-dim);max-width:60ch;}
+
+  .env-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+  @media(min-width:640px){.env-grid{grid-template-columns:repeat(3,1fr);}}
+  .env-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;cursor:pointer;transition:border-color .25s, transform .25s;
+  }
+  .env-card:hover{border-color:var(--forest-bright);transform:translateY(-2px);}
+  .env-card .icon{font-size:2rem;margin-bottom:10px;display:block;}
+  .env-card h3{font-size:1.1rem;margin-bottom:6px;}
+  .env-card p{color:var(--ink-dim);font-size:.88rem;margin:0;}
+  .env-detail{margin-top:20px;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);}
+  .env-detail .stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:.92rem;}
+  .env-detail .stat-row:last-child{border-bottom:none;}
+  .env-detail .stat-row b{color:var(--forest-bright);}
+  .env-detail a.video-link{display:inline-block;margin-top:12px;color:var(--ocean);text-decoration:underline;}
+
+  .boundary{margin-bottom:14px;}
+  .boundary-head{display:flex;justify-content:space-between;font-size:.92rem;margin-bottom:6px;}
+  .boundary-head .pct{font-weight:700;}
+  .bar-track{height:9px;background:var(--bg-soft);border-radius:5px;overflow:hidden;border:1px solid var(--line);}
+  .bar-fill{height:100%;border-radius:5px;transition:width 1s ease;}
+  .level-low .bar-fill{background:var(--forest-bright);}
+  .level-mid .bar-fill{background:var(--amber);}
+  .level-high .bar-fill{background:var(--danger);}
+
+  .footprint-form{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;}
+  .f-row{margin-bottom:16px;}
+  .f-row label{display:block;font-size:.9rem;margin-bottom:6px;color:var(--ink-dim);}
+  .f-row select{
+    width:100%;padding:10px;background:var(--bg-soft);color:var(--ink);
+    border:1px solid var(--line);border-radius:var(--radius);font-family:inherit;font-size:.95rem;
+  }
+  .calc-btn{
+    background:var(--forest-bright);color:#0e1712;border:none;padding:11px 22px;
+    border-radius:var(--radius);font-family:inherit;font-weight:700;cursor:pointer;font-size:.95rem;
+  }
+  .calc-btn:hover{opacity:.9;}
+  .result-box{margin-top:18px;padding:16px;border:1px solid var(--forest-bright);border-radius:var(--radius);display:none;}
+  .result-box.show{display:block;}
+  .result-box .score{font-size:2rem;font-family:'Fraunces',serif;color:var(--forest-bright);}
+
+  .team-grid{display:grid;grid-template-columns:1fr;gap:14px;}
+  @media(min-width:640px){.team-grid{grid-template-columns:1fr 1fr;}}
+  .team-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;}
+  .team-card h3{font-size:1.05rem;margin-bottom:4px;}
+  .team-card .role{color:var(--forest-bright);font-size:.85rem;margin-bottom:8px;}
+  .team-card p{color:var(--ink-dim);font-size:.88rem;margin:0;}
+
+  .help-item{padding:14px 0;border-bottom:1px solid var(--line);}
+  .help-item h3{font-size:1rem;margin-bottom:4px;}
+  .help-item p{color:var(--ink-dim);font-size:.9rem;margin:0;}
+
+  footer{border-top:1px solid var(--line);padding:24px 0;color:var(--ink-dim);font-size:.82rem;text-align:center;}
+  .back-link{display:inline-block;margin-bottom:16px;color:var(--forest-bright);cursor:pointer;font-size:.9rem;}
+</style>
+</head>
+<body data-theme="dark" dir="rtl">
+
+<header class="top">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand"><span class="pulse"></span><span id="brandText">نبض الأرض</span></div>
+      <div class="controls">
+        <button class="ctrl-btn" id="langBtn">EN</button>
+        <button class="ctrl-btn" id="themeBtn">☾</button>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button data-page="home" class="active">الرئيسية</button>
+      <button data-page="clock">الساعة الكوكبية</button>
+      <button data-page="footprint">الأثر الشخصي</button>
+      <button data-page="about">من نحن</button>
+      <button data-page="help">المساعدة</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HOME -->
+  <section class="page active" data-page="home">
+    <div class="hero">
+      <h1 id="homeTitle">استكشف نبض الكوكب</h1>
+      <p id="homeSub">ثلاث بيئات حيوية تحكي قصة التغيّر. اضغط على أي بطاقة لاستكشاف الأرقام والحقائق.</p>
+    </div>
+    <div class="env-grid" id="envGrid">
+      <div class="env-card" data-env="forest">
+        <span class="icon">🌲</span>
+        <h3>الغابة</h3>
+        <p>تنتج 20% من أكسجين الأرض، وتفقد 10 ملايين هكتار سنوياً.</p>
+      </div>
+      <div class="env-card" data-env="ocean">
+        <span class="icon">🌊</span>
+        <h3>المحيط</h3>
+        <p>يغطي 70% من سطح الكوكب، وحموضته ارتفعت 30% منذ 1850.</p>
+      </div>
+      <div class="env-card" data-env="polar">
+        <span class="icon">❄️</span>
+        <h3>القطب</h3>
+        <p>فقد 3 تريليون طن من الجليد، وحرارته ارتفعت 3 درجات مئوية.</p>
+      </div>
+    </div>
+    <div class="env-detail" id="envDetail" style="display:none;"></div>
+  </section>
+
+  <!-- PLANETARY CLOCK -->
+  <section class="page" data-page="clock">
+    <div class="hero">
+      <h1>الساعة الكوكبية</h1>
+      <p>الحدود التسعة لسلامة الأرض، ومدى اقترابنا من تجاوز كل حد.</p>
+    </div>
+    <div id="boundaryList"></div>
+  </section>
+
+  <!-- FOOTPRINT -->
+  <section class="page" data-page="footprint">
+    <div class="hero">
+      <h1>الأثر الشخصي</h1>
+      <p>احسب بصمتك البيئية اليومية بناءً على اختياراتك.</p>
+    </div>
+    <div class="footprint-form">
+      <div class="f-row">
+        <label>وسيلة التنقل اليومية</label>
+        <select id="q-transport">
+          <option value="1">مشي أو دراجة</option>
+          <option value="2">مواصلات عامة</option>
+          <option value="4">سيارة شخصية</option>
+          <option value="6">سيارة كبيرة / رحلة يومية طويلة</option>
+        </select>
+      </div>
+      <div class="f-row">
+        <label>نوع الغذاء الأساسي</label>
+        <select id="q-food">
+          <option value="1">نباتي بالكامل</option>
+          <option value="2">نباتي مع القليل من اللحوم</option>
+          <option value="4">لحوم يومياً</option>
+        </select>
+      </div>
+      <div class="f-row">
+        <label>استهلاك الطاقة المنزلية</label>
+        <select id="q-energy">
+          <option value="1">منخفض / طاقة متجددة</option>
+          <option value="3">متوسط</option>
+          <option value="5">مرتفع</option>
+        </select>
+      </div>
+      <div class="f-row">
+        <label>عادات الاستهلاك (تسوق، بلاستيك)</label>
+        <select id="q-waste">
+          <option value="1">أحاول تقليل النفايات دائماً</option>
+          <option value="2">أحياناً</option>
+          <option value="4">نادراً ما أفكر بذلك</option>
+        </select>
+      </div>
+      <button class="calc-btn" id="calcBtn">احسب بصمتي</button>
+      <div class="result-box" id="resultBox">
+        <div class="score" id="scoreText"></div>
+        <p id="scoreDesc"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="page" data-page="about">
+    <div class="hero">
+      <h1>من نحن</h1>
+      <p>نبض الأرض هو منصة تعليمية تفاعلية تهدف لرفع الوعي البيئي عبر تجربة بصرية مبسطة، بدلاً من عرض بيانات جامدة.</p>
+    </div>
+    <div class="team-grid">
+      <div class="team-card">
+        <h3>زينب هاني حسين</h3>
+        <div class="role">بكالوريوس علوم حاسوب وتكنولوجيا المعلومات — نظم معلومات حاسوبية</div>
+        <p>مطورة ومحللة نظم — مسؤولة عن بناء المنصة وربط بياناتها.</p>
+      </div>
+      <div class="team-card">
+        <h3>اية زياد</h3>
+        <div class="role">بكالوريوس إدارة أعمال</div>
+        <p>خبيرة إدارة أعمال واستراتيجيات — مسؤولة عن رؤية المشروع وخطته.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section class="page" data-page="help">
+    <div class="hero"><h1>المساعدة</h1></div>
+    <div class="help-item"><h3>الرئيسية</h3><p>تعرض البيئات الثلاث الأساسية؛ اضغط أي بطاقة لعرض تفاصيلها وإحصائياتها.</p></div>
+    <div class="help-item"><h3>الساعة الكوكبية</h3><p>تعرض الحدود التسعة لسلامة الأرض ونسبة اقتراب كل حد من نقطة اللاعودة.</p></div>
+    <div class="help-item"><h3>الأثر الشخصي</h3><p>أجب عن أربعة أسئلة بسيطة لتحصل على تقدير لبصمتك البيئية اليومية.</p></div>
+    <div class="help-item"><h3>من نحن</h3><p>تعرّف على فريق العمل خلف المشروع وأهدافه.</p></div>
+  </section>
+
+</main>
+
+<footer>نبض الأرض © 2026 — المعرفة هي الخطوة الأولى نحو التغيير.</footer>
+
+<script>
+const state = { lang:'ar', theme:'dark' };
+
+const boundaries = [
+  {ar:'التغيّر المناخي', en:'Climate Change', pct:85},
+  {ar:'فقدان التنوع الحيوي', en:'Biodiversity Loss', pct:90},
+  {ar:'تغيّر استخدام الأراضي', en:'Land-System Change', pct:65},
+  {ar:'تحمّض المحيطات', en:'Ocean Acidification', pct:35},
+  {ar:'المياه العذبة', en:'Freshwater Use', pct:40},
+  {ar:'النيتروجين والفوسفور', en:'Nitrogen & Phosphorus', pct:95},
+  {ar:'استنزاف الأوزون', en:'Ozone Depletion', pct:20},
+  {ar:'الهباء الجوي', en:'Atmospheric Aerosols', pct:55},
+  {ar:'المواد الكيميائية الجديدة', en:'Novel Entities', pct:88},
+];
+
+const envData = {
+  forest:{
+    icon:'🌲', ar:'الغابة', en:'Forest',
+    stats:[
+      ['المساحة المتبقية','~4 مليار هكتار'],
+      ['معدل الفقد السنوي','10 ملايين هكتار'],
+      ['نسبة الأكسجين المنتج','20%'],
+      ['التنوع البيولوجي','50% من أنواع الأرض'],
+    ],
+    video:'https://www.youtube.com',
+  },
+  ocean:{
+    icon:'🌊', ar:'المحيط', en:'Ocean',
+    stats:[
+      ['المساحة','361 مليون كم²'],
+      ['نسبة الأكسجين المنتج','50%'],
+      ['ارتفاع الحموضة منذ 1850','30%'],
+      ['الشعاب المرجانية المهددة','75%'],
+    ],
+    video:'https://www.youtube.com',
+  },
+  polar:{
+    icon:'❄️', ar:'القطب', en:'Polar',
+    stats:[
+      ['فقدان الجليد','3 تريليون طن'],
+      ['ارتفاع الحرارة بالقطب','+3°C'],
+      ['ارتفاع مستوى البحر المتوقع','7 أمتار'],
+      ['ذوبان الجليد السنوي','~280 مليار طن'],
+    ],
+    video:'https://www.youtube.com',
+  }
+};
+
+function renderBoundaries(){
+  const list = document.getElementById('boundaryList');
+  list.innerHTML = boundaries.map(b=>{
+    const level = b.pct>=75?'level-high':(b.pct>=45?'level-mid':'level-low');
+    const label = state.lang==='ar'?b.ar:b.en;
+    return `<div class="boundary ${level}">
+      <div class="boundary-head"><span>${label}</span><span class="pct">${b.pct}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${b.pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function showEnvDetail(key){
+  const e = envData[key];
+  const box = document.getElementById('envDetail');
+  const name = state.lang==='ar'?e.ar:e.en;
+  box.style.display = 'block';
+  box.innerHTML = `
+    <span class="back-link" id="closeDetail">← ${state.lang==='ar'?'إغلاق':'Close'}</span>
+    <h2>${e.icon} ${name}</h2>
+    ${e.stats.map(s=>`<div class="stat-row"><span>${s[0]}</span><b>${s[1]}</b></div>`).join('')}
+    <a class="video-link" href="${e.video}" target="_blank">${state.lang==='ar'?'مشاهدة فيديو توضيحي':'Watch explainer video'}</a>
+  `;
+  document.getElementById('closeDetail').onclick = ()=>{ box.style.display='none'; };
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+document.getElementById('envGrid').addEventListener('click', (e)=>{
+  const card = e.target.closest('.env-card');
+  if(card) showEnvDetail(card.dataset.env);
+});
+
+// Tabs
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-page]');
+  if(!btn) return;
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const page = btn.dataset.page;
+  document.querySelectorAll('section.page').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`section.page[data-page="${page}"]`).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+// Footprint calculator
+document.getElementById('calcBtn').addEventListener('click', ()=>{
+  const vals = ['q-transport','q-food','q-energy','q-waste'].map(id=>parseInt(document.getElementById(id).value,10));
+  const total = vals.reduce((a,b)=>a+b,0); // range 4-21
+  let label, desc;
+  if(total<=8){ label = state.lang==='ar'?'بصمة منخفضة 🌱':'Low footprint 🌱'; desc = state.lang==='ar'?'اختياراتك اليومية داعمة للكوكب بشكل ملحوظ.':'Your daily choices are notably planet-friendly.'; }
+  else if(total<=14){ label = state.lang==='ar'?'بصمة متوسطة ⚖️':'Moderate footprint ⚖️'; desc = state.lang==='ar'?'هناك مساحة جيدة للتحسين في بعض العادات.':'There is good room to improve some habits.'; }
+  else { label = state.lang==='ar'?'بصمة مرتفعة 🔥':'High footprint 🔥'; desc = state.lang==='ar'?'اختياراتك الحالية تشكّل ضغطاً كبيراً على الموارد.':'Your current choices place heavy pressure on resources.'; }
+  const box = document.getElementById('resultBox');
+  document.getElementById('scoreText').textContent = label;
+  document.getElementById('scoreDesc').textContent = desc;
+  box.classList.add('show');
+});
+
+// Theme toggle
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  state.theme = state.theme==='dark'?'light':'dark';
+  document.body.setAttribute('data-theme', state.theme);
+  document.getElementById('themeBtn').textContent = state.theme==='dark'?'☾':'☀';
+  localStorage.setItem('ep-theme', state.theme);
+});
+
+// Language toggle
+const translations = {
+  ar:{ brand:'نبض الأرض', homeTitle:'استكشف نبض الكوكب', homeSub:'ثلاث بيئات حيوية تحكي قصة التغيّر. اضغط على أي بطاقة لاستكشاف الأرقام والحقائق.', tabs:['الرئيسية','الساعة الكوكبية','الأثر الشخصي','من نحن','المساعدة'] },
+  en:{ brand:"Earth's Pulse", homeTitle:'Explore the pulse of the planet', homeSub:'Three living environments tell the story of change. Tap a card to explore the numbers.', tabs:['Home','Planetary Clock','Personal Footprint','About','Help'] }
+};
+
+document.getElementById('langBtn').addEventListener('click', ()=>{
+  state.lang = state.lang==='ar'?'en':'ar';
+  applyLang();
+  localStorage.setItem('ep-lang', state.lang);
+});
+
+function applyLang(){
+  const t = translations[state.lang];
+  document.documentElement.lang = state.lang;
+  document.body.dir = state.lang==='ar'?'rtl':'ltr';
+  document.getElementById('brandText').textContent = t.brand;
+  document.getElementById('homeTitle').textContent = t.homeTitle;
+  document.getElementById('homeSub').textContent = t.homeSub;
+  document.getElementById('langBtn').textContent = state.lang==='ar'?'EN':'AR';
+  document.querySelectorAll('nav.tabs button').forEach((b,i)=>{ b.textContent = t.tabs[i]; });
+
+  // env cards
+  const envNames = {forest:['الغابة','Forest'], ocean:['المحيط','Ocean'], polar:['القطب','Polar']};
+  document.querySelectorAll('.env-card').forEach(card=>{
+    const key = card.dataset.env;
+    card.querySelector('h3').textContent = state.lang==='ar'?envNames[key][0]:envNames[key][1];
+  });
+  renderBoundaries();
+  document.getElementById('envDetail').style.display='none';
+}
+
+// Init from storage
+(function init(){
+  const savedTheme = localStorage.getItem('ep-theme');
+  const savedLang = localStorage.getItem('ep-lang');
+  if(savedTheme){ state.theme = savedTheme; document.body.setAttribute('data-theme', savedTheme); document.getElementById('themeBtn').textContent = savedTheme==='dark'?'☾':'☀'; }
+  if(savedLang){ state.lang = savedLang; }
+  applyLang();
+})();
+</script>
+</body>
+</html>
