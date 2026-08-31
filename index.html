@@ -11,9 +11,15 @@
   --green:#22c55e; --green-dim:rgba(34,197,94,0.12); --green-line:rgba(34,197,94,0.25);
   --warn:#f59e0b; --danger:#ef4444;
   --bg:#0b1210; --bg2:#0f1a16; --panel:#121f1a; --ink:#eef1ee; --ink-dim:#9fb0a7; --line:rgba(255,255,255,0.08);
+  --shadow-md: 0 10px 24px rgba(0,0,0,0.42), 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 18px 40px rgba(0,0,0,0.48), 0 4px 12px rgba(0,0,0,0.32);
+  --shadow-green: 0 14px 30px rgba(34,197,94,0.25), 0 3px 10px rgba(34,197,94,0.18);
 }
 [data-theme="light"]{
   --bg:#f6f4ec; --bg2:#efece0; --panel:#ffffff; --ink:#16211b; --ink-dim:#5c6b62; --line:rgba(0,0,0,0.09);
+  --shadow-md: 0 10px 24px rgba(20,40,25,0.12), 0 2px 8px rgba(20,40,25,0.07);
+  --shadow-lg: 0 18px 36px rgba(20,40,25,0.16), 0 4px 10px rgba(20,40,25,0.08);
+  --shadow-green: 0 14px 28px rgba(34,197,94,0.18), 0 3px 8px rgba(34,197,94,0.1);
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
@@ -121,30 +127,31 @@ main{min-height:70vh;}
 .impact-score-label{font-size:.8rem;color:var(--ink-dim);}
 .impact-options{width:100%;display:grid;grid-template-columns:1fr;gap:14px;}
 @media(min-width:600px){.impact-options{grid-template-columns:1fr 1fr;}}
-.impact-category label{display:block;font-size:.85rem;color:var(--ink-dim);margin-bottom:6px;}
-.impact-category select{width:100%;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);}
-.impact-tips{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;}
+.impact-category label{display:block;font-size:.85rem;color:var(--ink-dim);margin-bottom:8px;}
+.impact-tips{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow-md);transform:translateY(-2px);}
 .impact-tips ul{margin:8px 0 0;padding-inline-start:20px;}
 .impact-tips li{margin-bottom:6px;font-size:.9rem;}
 
+.drama-env-picker{display:flex;justify-content:center;gap:10px;padding:0 20px 14px;flex-wrap:wrap;}
+.drama-env-btn{background:var(--panel);border:2px solid var(--line);color:var(--ink-dim);padding:8px 16px;border-radius:12px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow-md);transform:translateY(-2px);transition:transform .25s,box-shadow .25s,border-color .25s,color .25s;}
+.drama-env-btn:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+.drama-env-btn.active{border-color:var(--green);color:var(--green);}
 .drama-stages{display:flex;justify-content:center;gap:10px;padding:10px 20px;flex-wrap:wrap;}
-.drama-stage-btn{background:var(--panel);border:2px solid var(--line);color:var(--ink);padding:10px 20px;border-radius:14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.9rem;}
+.drama-stage-btn{background:var(--panel);border:2px solid var(--line);color:var(--ink);padding:10px 20px;border-radius:14px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.9rem;box-shadow:var(--shadow-md);transform:translateY(-2px);transition:transform .25s,box-shadow .25s,border-color .25s;}
+.drama-stage-btn:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
 .drama-stage-btn.active{border-color:var(--green);}
-.drama-scene{max-width:700px;margin:20px auto 60px;padding:0 20px;}
-.drama-scene-bg{height:180px;border-radius:16px;margin-bottom:16px;background-size:cover;background-position:center;}
-.drama-scene-bg.beauty{background-image:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.4)),url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1000&q=70');}
-.drama-scene-bg.warning{background-image:linear-gradient(rgba(80,60,10,.25),rgba(0,0,0,.5)),url('https://images.unsplash.com/photo-1500534623283-312aade485b7?w=1000&q=70');}
-.drama-scene-bg.collapse{background-image:linear-gradient(rgba(80,10,10,.3),rgba(0,0,0,.6)),url('https://images.unsplash.com/photo-1602491453631-e2a5ad90a131?w=1000&q=70');}
+.drama-scene{max-width:760px;margin:20px auto 60px;padding:0 20px;}
+.drama-scene-bg{height:280px;border-radius:20px;margin-bottom:20px;background-size:cover;background-position:center;box-shadow:var(--shadow-lg);transform:translateY(-2px);transition:background-image .5s ease, box-shadow .3s;}
 .drama-scene-text{text-align:center;}
 .drama-stats-list{text-align:start;max-width:420px;margin:14px auto 0;padding-inline-start:20px;color:var(--ink-dim);font-size:.9rem;}
 
-.help-sections{display:grid;grid-template-columns:1fr;gap:12px;padding:20px 20px 60px;max-width:700px;margin:0 auto;}
+.help-sections{display:grid;grid-template-columns:1fr;gap:16px;padding:24px 20px 64px;max-width:760px;margin:0 auto;}
 @media(min-width:640px){.help-sections{grid-template-columns:1fr 1fr;}}
-.help-section{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .2s, transform .2s;}
-.help-section:hover{border-color:var(--green-line);transform:translateY(-2px);}
-.help-section-icon{font-size:1.5rem;}
-.help-section h3{font-size:1rem;margin-bottom:4px;}
-.help-section p{color:var(--ink-dim);font-size:.85rem;margin:0;}
+.help-section{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;cursor:pointer;box-shadow:var(--shadow-md);transform:translateY(-3px);transition:border-color .25s, transform .25s, box-shadow .25s;}
+.help-section:hover{border-color:var(--green-line);transform:translateY(-6px);box-shadow:var(--shadow-lg);}
+.help-section-icon{font-size:1.8rem;}
+.help-section h3{font-size:1.08rem;margin-bottom:5px;}
+.help-section p{color:var(--ink-dim);font-size:.9rem;margin:0;}
 
 .story-timeline{display:flex;flex-direction:column;gap:16px;padding:0 20px;max-width:640px;margin:0 auto 30px;}
 .story-item{display:flex;gap:14px;align-items:flex-start;}
@@ -152,9 +159,10 @@ main{min-height:70vh;}
 .story-content h4{font-size:1rem;margin-bottom:2px;}
 .story-content p{color:var(--ink-dim);font-size:.88rem;margin:0;}
 .team-intro{text-align:center;color:var(--ink-dim);max-width:520px;margin:0 auto 20px;}
-.team-grid{display:grid;grid-template-columns:1fr;gap:16px;padding:0 20px 60px;max-width:700px;margin:0 auto;}
+.team-grid{display:grid;grid-template-columns:1fr;gap:18px;padding:0 20px 64px;max-width:700px;margin:0 auto;}
 @media(min-width:600px){.team-grid{grid-template-columns:1fr 1fr;}}
-.team-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;}
+.team-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px;text-align:center;box-shadow:var(--shadow-md);transform:translateY(-3px);transition:transform .25s,box-shadow .25s;}
+.team-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);}
 .team-avatar{font-size:2.2rem;margin-bottom:8px;}
 .team-role{display:block;color:var(--green);font-size:.85rem;margin-bottom:8px;}
 .team-bio{color:var(--ink-dim);font-size:.85rem;margin-bottom:10px;}
@@ -162,25 +170,43 @@ main{min-height:70vh;}
 
 .env-detail-page{max-width:800px;margin:20px auto 60px;padding:0 20px;}
 .back-btn{display:inline-flex;align-items:center;gap:6px;background:var(--green-dim);border:1px solid var(--green-line);color:var(--green);padding:9px 18px;border-radius:12px;cursor:pointer;font-size:.85rem;margin-bottom:20px;}
-.env-hero-image{position:relative;width:100%;height:240px;border-radius:18px;overflow:hidden;margin-bottom:24px;}
+.env-hero-image{position:relative;width:100%;height:240px;border-radius:18px;overflow:hidden;margin-bottom:24px;box-shadow:var(--shadow-lg);}
 .env-hero-image img{width:100%;height:100%;object-fit:cover;}
 .env-icon-badge{position:absolute;top:16px;right:16px;font-size:1.8rem;background:rgba(0,0,0,.45);padding:9px 12px;border-radius:14px;}
 .env-info{text-align:center;margin-bottom:24px;}
 .env-info h2{color:var(--green);font-size:1.8rem;}
 .env-desc-text{color:var(--ink-dim);margin-bottom:12px;}
 .env-report-text{line-height:1.85;padding:16px;background:var(--green-dim);border-radius:14px;border-inline-start:3px solid var(--green);font-size:.95rem;}
-.stats-title{text-align:center;color:var(--green);font-size:1.1rem;margin:24px 0 12px;}
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px;}
-.stat-card{background:var(--green-dim);border:1px solid var(--green-line);border-radius:12px;padding:14px;text-align:center;}
-.stat-value{display:block;font-family:'Fraunces',serif;font-size:1.25rem;font-weight:700;color:var(--green);}
-.stat-label{display:block;font-size:.75rem;color:var(--ink-dim);margin-top:3px;}
+.stats-title{text-align:center;color:var(--green);font-size:1.1rem;margin:24px 0 14px;}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--green-dim);border:1px solid var(--green-line);border-radius:14px;padding:16px;text-align:center;box-shadow:var(--shadow-md);transform:translateY(-4px);transition:transform .25s,box-shadow .25s;}
+.stat-card:hover{transform:translateY(-7px);box-shadow:var(--shadow-lg);}
+.stat-value{display:block;font-family:'Fraunces',serif;font-size:1.3rem;font-weight:700;color:var(--green);}
+.stat-label{display:block;font-size:.76rem;color:var(--ink-dim);margin-top:3px;}
 .video-container h3{text-align:center;color:var(--green);font-size:1.05rem;margin-bottom:12px;}
-.video-container iframe{width:100%;height:220px;border:none;border-radius:14px;}
-.explore-360-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:360px;margin:24px auto 0;background:var(--green);color:#08130d;border:none;padding:14px;border-radius:40px;font-weight:700;font-size:1rem;cursor:pointer;}
-.env-360-container{position:relative;width:100%;height:280px;border-radius:18px;overflow-x:scroll;overflow-y:hidden;cursor:grab;scrollbar-width:none;margin-bottom:20px;}
-.env-360-container::-webkit-scrollbar{display:none;}
-.env-360-image{width:200%;height:100%;background-size:cover;background-position:center;}
-.env-360-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;padding:6px 16px;border-radius:20px;font-size:.75rem;}
+.video-container iframe{width:100%;height:220px;border:none;border-radius:14px;box-shadow:var(--shadow-md);}
+.watch-youtube-link{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px auto 0;max-width:320px;background:#fff;color:#0f0f0f;border:none;padding:11px 20px;border-radius:30px;font-weight:700;font-size:.9rem;text-decoration:none;box-shadow:var(--shadow-md);transform:translateY(-2px);transition:transform .25s,box-shadow .25s;}
+.watch-youtube-link:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg);}
+.watch-youtube-link .yt-ic{color:#ff0000;font-size:1.2rem;}
+.explore-360-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:360px;margin:24px auto 0;background:var(--green);color:#08130d;border:none;padding:14px;border-radius:40px;font-weight:700;font-size:1rem;cursor:pointer;box-shadow:var(--shadow-green);transform:translateY(-3px);transition:transform .25s,box-shadow .25s;}
+.explore-360-btn:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(34,197,94,.35);}
+.env-360-container{position:relative;width:100%;height:340px;border-radius:20px;overflow:hidden;cursor:grab;touch-action:none;box-shadow:var(--shadow-lg);margin-bottom:20px;background:#000;}
+.env-360-container.dragging{cursor:grabbing;}
+.env-360-image{position:absolute;width:230%;height:230%;top:-65%;left:-65%;background-size:cover;background-position:center;will-change:transform;}
+.env-360-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;padding:6px 16px;border-radius:20px;font-size:.75rem;pointer-events:none;}
+
+.custom-select{position:relative;}
+.cs-trigger{width:100%;padding:11px 14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;cursor:pointer;box-shadow:var(--shadow-md);transform:translateY(-2px);transition:transform .25s,box-shadow .25s,border-color .2s;}
+.cs-trigger:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+.cs-trigger.open{border-color:var(--green-line);}
+.cs-trigger .chev{transition:transform .3s ease;color:var(--ink-dim);}
+.cs-trigger.open .chev{transform:rotate(180deg);}
+.cs-list{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);overflow:hidden;z-index:10;
+  max-height:0;opacity:0;transform:translateY(-6px);transition:max-height .5s ease, opacity .5s ease, transform .5s ease;pointer-events:none;}
+.cs-list.open{max-height:260px;opacity:1;transform:translateY(0);pointer-events:auto;}
+.cs-option{padding:11px 14px;cursor:pointer;font-size:.92rem;transition:background .15s;}
+.cs-option:hover{background:var(--green-dim);}
+.cs-option.selected{color:var(--green);font-weight:700;}
 
 footer.app-footer{text-align:center;color:var(--ink-dim);font-size:.8rem;padding:30px 20px;border-top:1px solid var(--line);}
 </style>
@@ -257,13 +283,13 @@ footer.app-footer{text-align:center;color:var(--ink-dim);font-size:.8rem;padding
       </div>
       <div class="impact-options">
         <div class="impact-category"><label id="lblTransport"></label>
-          <select id="selTransport"></select></div>
+          <div class="custom-select" data-field="transport" id="csTransport"></div></div>
         <div class="impact-category"><label id="lblFood"></label>
-          <select id="selFood"></select></div>
+          <div class="custom-select" data-field="food" id="csFood"></div></div>
         <div class="impact-category"><label id="lblEnergy"></label>
-          <select id="selEnergy"></select></div>
+          <div class="custom-select" data-field="energy" id="csEnergy"></div></div>
         <div class="impact-category"><label id="lblShopping"></label>
-          <select id="selShopping"></select></div>
+          <div class="custom-select" data-field="shopping" id="csShopping"></div></div>
       </div>
       <div class="impact-tips">
         <h4 id="tipsTitle">💡 نصائح لتقليل الأثر</h4>
@@ -279,9 +305,10 @@ footer.app-footer{text-align:center;color:var(--ink-dim);font-size:.8rem;padding
       <p id="dramaSubtitle" style="font-weight:700;"></p>
       <p id="dramaDesc"></p>
     </div>
+    <div class="drama-env-picker" id="dramaEnvPicker"></div>
     <div class="drama-stages" id="dramaStages"></div>
     <div class="drama-scene">
-      <div class="drama-scene-bg beauty" id="dramaSceneBg"></div>
+      <div class="drama-scene-bg" id="dramaSceneBg"></div>
       <div class="drama-scene-text">
         <h3 id="dramaStageName"></h3>
         <p id="dramaStageDesc"></p>
@@ -327,14 +354,17 @@ footer.app-footer{text-align:center;color:var(--ink-dim);font-size:.8rem;padding
         <div class="video-container">
           <h3 id="watchReportTitle">شاهد التقرير</h3>
           <iframe id="envVideo" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <a class="watch-youtube-link" id="watchYoutubeLink" href="#" target="_blank" rel="noopener">
+            <span class="yt-ic">▶</span><span id="watchYoutubeText">مشاهدة على يوتيوب</span>
+          </a>
         </div>
         <button class="explore-360-btn" id="explore360Btn"><span>🔄</span><span id="explore360Text">استكشف البيئة 360°</span></button>
       </div>
       <div id="env360View" style="display:none;">
         <button class="back-btn" id="back360Btn">← العودة للتقرير</button>
-        <div class="env-360-container">
+        <div class="env-360-container" id="env360Container">
           <div class="env-360-image" id="env360Image"></div>
-          <div class="env-360-hint">↔ اسحب للاستكشاف</div>
+          <div class="env-360-hint" id="env360Hint">✥ اسحب في أي اتجاه للاستكشاف</div>
         </div>
       </div>
     </div>
@@ -384,11 +414,11 @@ const T = {
     quickFacts:"حقائق سريعة", watchReport:"شاهد التقرير", explore360:"استكشف البيئة 360°", backToReport:"← العودة للتقرير",
     envs:{
       forest:{name:"الغابة",desc:"الرئة الخضراء للأرض",icon:"🌲",report:"تغطي الغابات المطيرة حوالي 6% من سطح الأرض، لكنها موطن لأكثر من 50% من التنوع البيولوجي العالمي. يتم فقدان حوالي 10 ملايين هكتار من الغابات سنوياً، أي ما يعادل 27 ملعب كرة قدم في الدقيقة.",
-        facts:[["نسبة الأكسجين","20%"],["المساحة المتبقية","~4 مليار هكتار"],["معدل الفقد السنوي","10 ملايين هكتار"],["التنوع البيولوجي","50% من الأنواع"]], video:"https://www.youtube.com/embed/JkaxUblCGz0"},
+        facts:[["نسبة الأكسجين","20%"],["المساحة المتبقية","~4 مليار هكتار"],["معدل الفقد السنوي","10 ملايين هكتار"],["التنوع البيولوجي","50% من الأنواع"]], videoId:"JkaxUblCGz0"},
       ocean:{name:"المحيط",desc:"قلب الحياة الأزرق",icon:"🌊",report:"تغطي المحيطات 71% من سطح الأرض وتحتوي على 97% من مياه الكوكب. منذ الثورة الصناعية، زادت حموضة المحيطات بنسبة 30%، مما يهدد الحياة البحرية والشعاب المرجانية التي تدعم ربع الأنواع البحرية.",
-        facts:[["نسبة الأكسجين","50%"],["المساحة","361 مليون كم²"],["ارتفاع الحموضة","30% منذ 1850"],["الشعاب المهددة","75%"]], video:"https://www.youtube.com/embed/2SVs0R8opGg"},
+        facts:[["نسبة الأكسجين","50%"],["المساحة","361 مليون كم²"],["ارتفاع الحموضة","30% منذ 1850"],["الشعاب المهددة","75%"]], videoId:"2SVs0R8opGg"},
       arctic:{name:"القطب",desc:"حارس التوازن المناخي",icon:"❄️",report:"فقدت القارة القطبية الجنوبية أكثر من 3 تريليون طن من الجليد بين عامي 1992 و2017. إذا ذاب كل الجليد في جرينلاند، سيرتفع مستوى سطح البحر بـ 7 أمتار.",
-        facts:[["فقدان الجليد","3 تريليون طن"],["ارتفاع الحرارة","+3°C في القطب"],["ارتفاع البحر","7 أمتار"],["ذوبان سنوي","~280 مليار طن"]], video:"https://www.youtube.com/embed/0vHcV0Fk4eE"}
+        facts:[["فقدان الجليد","3 تريليون طن"],["ارتفاع الحرارة","+3°C في القطب"],["ارتفاع البحر","7 أمتار"],["ذوبان سنوي","~280 مليار طن"]], videoId:"0vHcV0Fk4eE"}
     }
   },
   en:{
@@ -429,11 +459,11 @@ const T = {
     quickFacts:"Quick Facts", watchReport:"Watch Report", explore360:"Explore Environment 360°", backToReport:"← Back to Report",
     envs:{
       forest:{name:"Forest",desc:"The green lungs of Earth",icon:"🌲",report:"Rainforests cover about 6% of Earth's surface, but are home to over 50% of global biodiversity. Approximately 10 million hectares of forest are lost annually.",
-        facts:[["Oxygen produced","20%"],["Remaining area","~4 billion ha"],["Annual loss","10 million ha"],["Biodiversity","50% of species"]], video:"https://www.youtube.com/embed/JkaxUblCGz0"},
+        facts:[["Oxygen produced","20%"],["Remaining area","~4 billion ha"],["Annual loss","10 million ha"],["Biodiversity","50% of species"]], videoId:"JkaxUblCGz0"},
       ocean:{name:"Ocean",desc:"The blue heart of life",icon:"🌊",report:"Oceans cover 71% of Earth's surface and contain 97% of the planet's water. Since the Industrial Revolution, ocean acidity has increased by 30%.",
-        facts:[["Oxygen produced","50%"],["Area","361 million km²"],["Acidity increase","30% since 1850"],["Coral threatened","75%"]], video:"https://www.youtube.com/embed/2SVs0R8opGg"},
+        facts:[["Oxygen produced","50%"],["Area","361 million km²"],["Acidity increase","30% since 1850"],["Coral threatened","75%"]], videoId:"2SVs0R8opGg"},
       arctic:{name:"Arctic",desc:"Guardian of climate balance",icon:"❄️",report:"Antarctica has lost more than 3 trillion tons of ice between 1992 and 2017. If all of Greenland's ice melted, sea levels would rise by 7 meters.",
-        facts:[["Ice loss","3 trillion tons"],["Temperature rise","+3°C in Arctic"],["Sea level rise","7 meters"],["Annual melt","~280 billion tons"]], video:"https://www.youtube.com/embed/0vHcV0Fk4eE"}
+        facts:[["Ice loss","3 trillion tons"],["Temperature rise","+3°C in Arctic"],["Sea level rise","7 meters"],["Annual melt","~280 billion tons"]], videoId:"0vHcV0Fk4eE"}
     }
   }
 };
@@ -451,7 +481,7 @@ const S = {
   page: 'home',
   removed: [],
   transport:'car', food:'meat', energy:'high', shopping:'frequent',
-  drama:'beauty',
+  drama:'beauty', dramaEnv:'forest',
   selectedEnv: null,
   show360:false
 };
@@ -552,13 +582,18 @@ function renderImpact(){
   document.getElementById('lblEnergy').textContent = tr.activities.energy;
   document.getElementById('lblShopping').textContent = tr.activities.shopping;
 
-  function fillSelect(id, opts, current){
-    document.getElementById(id).innerHTML = Object.entries(opts).map(([k,v])=>`<option value="${k}" ${k===current?'selected':''}>${v}</option>`).join('');
+  function buildCustomSelect(containerId, opts, current, field){
+    const el = document.getElementById(containerId);
+    const wasOpen = el.querySelector('.cs-list.open');
+    el.innerHTML = `
+      <div class="cs-trigger" data-field="${field}"><span class="cs-current">${opts[current]}</span><span class="chev">▾</span></div>
+      <div class="cs-list">${Object.entries(opts).map(([k,v])=>`<div class="cs-option ${k===current?'selected':''}" data-value="${k}">${v}</div>`).join('')}</div>
+    `;
   }
-  fillSelect('selTransport', tr.transportOptions, S.transport);
-  fillSelect('selFood', tr.foodOptions, S.food);
-  fillSelect('selEnergy', tr.energyOptions, S.energy);
-  fillSelect('selShopping', tr.shoppingOptions, S.shopping);
+  buildCustomSelect('csTransport', tr.transportOptions, S.transport, 'transport');
+  buildCustomSelect('csFood', tr.foodOptions, S.food, 'food');
+  buildCustomSelect('csEnergy', tr.energyOptions, S.energy, 'energy');
+  buildCustomSelect('csShopping', tr.shoppingOptions, S.shopping, 'shopping');
 
   const score = calcImpact();
   const level = impactLevel(score, tr);
@@ -576,17 +611,31 @@ function renderImpact(){
   document.getElementById('tipsList').innerHTML = tips.map(x=>`<li>${x}</li>`).join('');
 }
 
+const dramaOverlay = {
+  beauty:'linear-gradient(rgba(10,30,15,.15),rgba(10,30,15,.45))',
+  warning:'linear-gradient(rgba(80,60,10,.3),rgba(40,20,0,.55))',
+  collapse:'linear-gradient(rgba(80,10,10,.4),rgba(30,0,0,.65))'
+};
 function renderDrama(){
   const tr = t();
   document.getElementById('dramaTitle').textContent = tr.dramaTitle;
   document.getElementById('dramaSubtitle').textContent = tr.dramaSubtitle;
   document.getElementById('dramaDesc').textContent = tr.dramaDesc;
+
+  const envKeys = ['forest','ocean','arctic'];
+  document.getElementById('dramaEnvPicker').innerHTML = envKeys.map(k=>
+    `<button class="drama-env-btn ${S.dramaEnv===k?'active':''}" data-dramaenv="${k}"><span>${tr.envs[k].icon}</span><span>${tr.envs[k].name}</span></button>`
+  ).join('');
+
   const stages = ['beauty','warning','collapse'];
   const icons = {beauty:'🌿',warning:'⚠️',collapse:'🔥'};
   document.getElementById('dramaStages').innerHTML = stages.map(s=>
     `<button class="drama-stage-btn ${S.drama===s?'active':''}" data-stage="${s}"><span>${icons[s]}</span><span>${tr.dramaStages[s].name}</span></button>`
   ).join('');
-  document.getElementById('dramaSceneBg').className = 'drama-scene-bg '+S.drama;
+
+  const bg = document.getElementById('dramaSceneBg');
+  bg.style.backgroundImage = dramaOverlay[S.drama] + ", url('" + images[S.dramaEnv] + "')";
+
   const colors = {beauty:'#22c55e',warning:'#f59e0b',collapse:'#ef4444'};
   const nameEl = document.getElementById('dramaStageName');
   nameEl.textContent = tr.dramaStages[S.drama].name;
@@ -654,13 +703,44 @@ function renderEnvironment(){
   document.getElementById('quickFactsTitle').textContent = tr.quickFacts;
   document.getElementById('envStatsGrid').innerHTML = e.facts.map(f=>`<div class="stat-card"><span class="stat-value">${f[1]}</span><span class="stat-label">${f[0]}</span></div>`).join('');
   document.getElementById('watchReportTitle').textContent = tr.watchReport;
-  document.getElementById('envVideo').src = e.video;
+  document.getElementById('envVideo').src = "https://www.youtube.com/embed/"+e.videoId;
+  document.getElementById('watchYoutubeLink').href = "https://www.youtube.com/watch?v="+e.videoId;
+  document.getElementById('watchYoutubeText').textContent = S.lang==='ar' ? 'مشاهدة التقرير كاملاً على يوتيوب' : 'Watch the full report on YouTube';
   document.getElementById('explore360Text').textContent = tr.explore360;
   document.getElementById('env360Image').style.backgroundImage = "url('"+images[S.selectedEnv]+"')";
   document.getElementById('back360Btn').textContent = tr.backToReport;
 
   document.getElementById('envReportView').style.display = S.show360 ? 'none':'block';
   document.getElementById('env360View').style.display = S.show360 ? 'block':'none';
+  if(S.show360) resetPan();
+}
+
+/* ===== 360 drag-pan (all directions) ===== */
+let panState = {x:0, y:0, dragging:false, startX:0, startY:0, baseX:0, baseY:0};
+function resetPan(){ panState.x=0; panState.y=0; applyPan(); }
+function applyPan(){
+  const img = document.getElementById('env360Image');
+  if(img) img.style.transform = `translate(${panState.x}px, ${panState.y}px)`;
+}
+function clampPan(){
+  const container = document.getElementById('env360Image')?.parentElement;
+  if(!container) return;
+  const maxOffset = container.clientWidth * 0.55;
+  const maxOffsetY = container.clientHeight * 0.55;
+  panState.x = Math.max(-maxOffset, Math.min(maxOffset, panState.x));
+  panState.y = Math.max(-maxOffsetY, Math.min(maxOffsetY, panState.y));
+}
+function initPanEvents(){
+  const container = document.getElementById('env360Container');
+  if(!container || container.dataset.bound) return;
+  container.dataset.bound = '1';
+  const start = (x,y)=>{ panState.dragging=true; panState.startX=x; panState.startY=y; panState.baseX=panState.x; panState.baseY=panState.y; container.classList.add('dragging'); };
+  const move = (x,y)=>{ if(!panState.dragging) return; panState.x = panState.baseX + (x-panState.startX); panState.y = panState.baseY + (y-panState.startY); clampPan(); applyPan(); };
+  const end = ()=>{ panState.dragging=false; container.classList.remove('dragging'); };
+  container.addEventListener('pointerdown', e=>{ start(e.clientX, e.clientY); container.setPointerCapture(e.pointerId); });
+  container.addEventListener('pointermove', e=>move(e.clientX, e.clientY));
+  container.addEventListener('pointerup', end);
+  container.addEventListener('pointerleave', end);
 }
 
 function renderAll(){
@@ -705,16 +785,36 @@ document.body.addEventListener('click', (e)=>{
   const stageBtn = e.target.closest('[data-stage]');
   if(stageBtn){ S.drama = stageBtn.dataset.stage; renderDrama(); return; }
 
-  if(e.target.closest('#explore360Btn')){ S.show360=true; renderEnvironment(); return; }
+  const dramaEnvBtn = e.target.closest('[data-dramaenv]');
+  if(dramaEnvBtn){ S.dramaEnv = dramaEnvBtn.dataset.dramaenv; renderDrama(); return; }
+
+  if(e.target.closest('#explore360Btn')){ S.show360=true; renderEnvironment(); requestAnimationFrame(initPanEvents); return; }
   if(e.target.id==='back360Btn'){ S.show360=false; renderEnvironment(); return; }
   if(e.target.id==='envBackBtn'){ goTo('home'); return; }
-});
 
-document.body.addEventListener('change', (e)=>{
-  if(e.target.id==='selTransport'){ S.transport=e.target.value; renderImpact(); }
-  if(e.target.id==='selFood'){ S.food=e.target.value; renderImpact(); }
-  if(e.target.id==='selEnergy'){ S.energy=e.target.value; renderImpact(); }
-  if(e.target.id==='selShopping'){ S.shopping=e.target.value; renderImpact(); }
+  const csTrigger = e.target.closest('.cs-trigger');
+  if(csTrigger){
+    const list = csTrigger.nextElementSibling;
+    const isOpen = list.classList.contains('open');
+    document.querySelectorAll('.cs-list.open').forEach(l=>l.classList.remove('open'));
+    document.querySelectorAll('.cs-trigger.open').forEach(tr=>tr.classList.remove('open'));
+    if(!isOpen){ list.classList.add('open'); csTrigger.classList.add('open'); }
+    return;
+  }
+  const csOption = e.target.closest('.cs-option');
+  if(csOption){
+    const container = csOption.closest('.custom-select');
+    const field = container.dataset.field;
+    S[field] = csOption.dataset.value;
+    document.querySelectorAll('.cs-list.open').forEach(l=>l.classList.remove('open'));
+    document.querySelectorAll('.cs-trigger.open').forEach(tr=>tr.classList.remove('open'));
+    renderImpact();
+    return;
+  }
+  if(!e.target.closest('.custom-select')){
+    document.querySelectorAll('.cs-list.open').forEach(l=>l.classList.remove('open'));
+    document.querySelectorAll('.cs-trigger.open').forEach(tr=>tr.classList.remove('open'));
+  }
 });
 
 document.getElementById('hamburger').addEventListener('click', ()=>{
